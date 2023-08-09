@@ -18,49 +18,18 @@ emerge -v app-misc/wazuh-indexer
 ```
 
 After emerging wazuh-indexer package, you need to complete the following steps :
-- Initialize the environment
-- Configure Wazuh Indexer
-- Deploy certificates
-- Start the service
-- Initialize wazuh indexer
+- Configure Wazuh indexer
 - Test the installation
 
-#### 1.1 Initialize the environment
+#### 1.1 Configure Wazuh indexer
 
 ```bash
-# Initialize the environment
+# Configure Wazuh indexer
 emerge --config "=app-misc/wazuh-indexer-<version>"
 # Replace <version> with the wazuh indexer version
 ```
 
-#### 1.2 Configure Wazuh Indexer
-To configure Wazuh Indexer, please refer to the [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html#configuring-the-wazuh-indexer).
-
-#### 1.3 Deploy certificates
-
-To deploy certificates, you can use your own PKI or follow the wazuh documentation : 
-- [Certificates creation](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html#certificates-creation).
-- [Certificates deployment](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html#deploying-certificates)
-
-If you decided to use your own PKI, you can check which certificates and where you have to put them in the configuration file `/etc/wazuh-indexer/opensearch.yml`.
-
-#### 1.4 Start the service
-
-```bash
-# To start the service
-rc-service start wazuh-indexer
-
-# To start the service at boot
-rc-update add wazuh-indexer
-```
-
-Service configuration file : `/etc/conf.d/wazuh-indexer`
-
-#### 1.5 Initialize Wazuh Indexer
-
-To initiate the cluster, please refer to the [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html#cluster-initialization).
-
-#### 1.6 Check the cluster installation
+#### 1.2 Check the installation
 
 To test the cluster installation, please refer to the [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html#testing-the-cluster-installation).
 
