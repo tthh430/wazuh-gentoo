@@ -48,28 +48,32 @@ pkg_config() {
         useradd -d /dev/null -c "Wazuh Indexer user" -M -r -U -s /sbin/nologin "${wazuh_indexer_user}" > /dev/null
    
         if  [[ $(getent passwd "${wazuh_indexer_user}" | grep -c "${wazuh_indexer_user}") -eq 1 ]]; then
-            einfo "${wazuh_indexer_user} user  created"
+            einfo "${wazuh_indexer_user} user created"
         else
             eerror "Error during ${wazuh_indexer_user} user creation"
+            exit 1
         fi
     else
         einfo "${wazuh_indexer_user} user already exist. Skip!"
     fi
+    einfo
 
     # Replace /usr/bin/bash by /bin/bash in all files in /usr/share/wazuh-indexer/bin
     einfo "Replace /usr/bin/bash by /bin/bash in all files in /usr/share/wazuh-indexer/bin"
+    einfo
     cd /usr/share/wazuh-indexer/bin
     grep -ri "/usr/bin/bash" | cut -d":" -f1  | while read -r line; do
         sed -i 's%/usr/bin/bash%/bin/bash%g' "${line}"
     done
 
     # Certifcates
-    read -p "Would you like to use your own PKI or use the wazuh tools to create certificates ? [pki/wazuh]" certificate
+    read -p "Would you like to use your own PKI or use the wazuh tools to create certificates ? [pki/wazuh] " certificate
 
     if [[ -n "${certificate}" ]]; then
         case "${certificate}" in 
             "pki")
                 einfo "Please refer to the documentation to know where install your certificates"
+                einfo
                 ;;
             
             "wazuh")
@@ -85,17 +89,18 @@ pkg_config() {
                 curl -sO https://packages.wazuh.com/4.4/wazuh-certs-tool.sh
 
                 einfo "Script does not support clustering (multi nodes of each component) deployment"
-                einfo "only standalone (all on the the same server) and distributed (one node of each component) deployment"
-                read -p "Which kind of deployment will you use ? [standalone/distributed]" deployment_method
+                einfo "Only standalone (all on the the same server) and distributed (one node of each component) deployment"
+                read -p "Which kind of deployment will you use ? [standalone/distributed] " deployment_method
 
-                if [[ -n "${deployement_method}" ]]; then
-                    case "${deployement_method}" in
+                if [[ -n "${deployment_method}" ]]; then
+                    case "${deployment_method}" in
                         "standalone")
                             read -p "Node name : " node_name
                             read -p "Node IP : " node_ip
 
-                            if [[ -z "${node_name}" || "${node_ip}" ]]; then
+                            if [[ -z "${node_name}" || -z "${node_ip}" ]]; then
                                 eerror "Please feel node name and node ip"
+                                exit 1
                             fi
 
                             indexer_name=${node_name}
@@ -116,17 +121,21 @@ pkg_config() {
 
                             if [[ -z "${indexer_name}" || -z "${indexer_ip}" || -z "${server_name}" || -z "${server_ip}" || -z "${dashboard_name}" || -z "${dashboard_ip}" ]]; then
                                 eerror "Please feel indexer, server, dashboard nodes information (name and ip)"
+                                exit 1
                             fi
                             ;;
 
                         *)
                             eerror "Unknown option !"
-                            einfo "Authorize values : 'standalone' or 'distributed'"
+                            eerror "Authorize values : 'standalone' or 'distributed'"
+                            exit 1 
+
                             ;;
                     esac
                 else
                     eerror "Empty value not allowed !"
-                    einfo "Authorize values : 'standalone' or 'distributed'"
+                    eerror "Authorize values : 'standalone' or 'distributed'"
+                    exit 1
                 fi
 
                 # Write config file
@@ -153,18 +162,21 @@ pkg_config() {
                 rm -rf ./wazuh-certificates
 
                 einfo "Wazuh certs are in ${certs_working_dir}/wazuh-certificiates.tar"
-                einfo "Copy the wazuh-certificates.tar file to all nodes if you use distributed deployement"
+                einfo "Copy the wazuh-certificates.tar file to all nodes if you use distributed deployment"
                 einfo "Use the same directory (${certs_working_dir}) and the tar file name in all nodes to deploy automatically certificates"
                 ;;
             *)
                 eerror "Unknown option !"
-                einfo "Authorize values : 'pki' or 'wazuh'"
+                eerror "Authorize values : 'pki' or 'wazuh'"
+                exit 1
                 ;;
         esac
     else
         eerror "Empty value not allowed !"
-        einfo "Authorize values : 'pki' or 'wazuh'"
+        eerror "Authorize values : 'pki' or 'wazuh'"
+        exit 1
     fi
+    einfo
 
     # Configuring the wazuh indexer
     wazuh_indexer_config_file="/etc/wazuh-indexer/opensearch.yml"
@@ -180,12 +192,14 @@ pkg_config() {
 
     if [[ -z "${network_host}" ]]; then
         eerror "Empty value not allowed !"
+        exit 1
     fi 
 
     read -p "Cluster name : " cluster_name
 
      if [[ -z "${cluster_name}" ]]; then
         eerror "Empty value not allowed !"
+        exit 1
     fi 
 
     # Write indexer configuration
@@ -213,7 +227,7 @@ pkg_config() {
     echo -e "plugins.security.check_snapshot_restore_write_privileges: true" >> ${wazuh_indexer_config_file}
     echo -e "plugins.security.enable_snapshot_restore_privilege: true" >> ${wazuh_indexer_config_file}
     echo -e "plugins.security.nodes_dn:" >> ${wazuh_indexer_config_file}
-    echo -e "- \"CN=node-1,OU=Wazuh,O=Wazuh,L=California,C=US\"" >> ${wazuh_indexer_config_file}
+    echo -e "- \"CN=${indexer_name},OU=Wazuh,O=Wazuh,L=California,C=US\"" >> ${wazuh_indexer_config_file}
     echo -e "plugins.security.restapi.roles_enabled:" >> ${wazuh_indexer_config_file}
     echo -e "- \"all_access\"" >> ${wazuh_indexer_config_file}
     echo -e "- \"security_rest_api_access\"" >> ${wazuh_indexer_config_file}
@@ -251,6 +265,7 @@ pkg_config() {
 
     if [[ -z "${start_at_boot}" ]]; then
         eerror "Empty value not allowed !"
+        exit 1
     fi 
 
     if [[ "${start_at_boot}" == "y" ]]; then
