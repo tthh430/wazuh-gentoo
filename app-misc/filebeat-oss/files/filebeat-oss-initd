@@ -1,0 +1,74 @@
+#!/sbin/openrc-run
+# Copyright 2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="filebeat-oss daemon"
+description="Filebeat-OSS"
+
+# Set default value if unset
+FB_HOME=${FB_HOME:="/usr/share/filebeat"}
+FB_CONFIG_DIR=${FB_CONFIG_DIR:="/etc/filebeat"}
+FB_DATA_DIR=${FB_DATA_DIR:="/var/lib/filebeat"}
+FB_LOGS_DIR=${FB_LOGS_PATH:="/var/log/filebeat"}
+PID_DIR=${PID_DIR:="/run/filebeat-oss"}
+FB_USER=${FB_USER:="filebeat-oss"}
+FB_GROUP=${FB_GROUP:="filebeat-oss"}
+
+pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
+
+command="${FB_HOME}/bin/filebeat"
+command_args="-c ${FB_CONFIG_DIR}/filebeat.yml --ath.home ${FB_HOME} --path-data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR}"
+command_test_args="-e test config"
+#command_args_background="--pidfile=${pidfile}"
+required_files=""
+
+depend() {
+	use net
+}
+
+test() {
+	sudo -u "${FB_USER} ${command} ${command_test_args}"
+}
+
+start_pre() {
+	# Ensure PID_DIR exists
+	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
+		mkdir -p "${PID_DIR}"
+		chown "${WI_USER}:${WI_GROUP} ${PID_DIR}"
+	fi
+
+	# Ensure owner of filebeat home directory
+	chown -R "${FB_USER}:${FB_GROUP}" "${FB_HOME}"
+
+	# Ensure owner of filebeat config directory
+	chown -R "${FB_USER}:${FB_GROUP}" "${FB_CONFIG_DIR}"
+
+	# Ensure owner of filebeat data directory
+	chown -R "${FB_USER}:${FB_GROUP}" "${FB_DATA_DIR}"
+
+	# Ensure owner of filebeat logs directory
+	chown -R "${FB_USER}:${FB_GROUP}" "${FB_LOGS_DIR}"
+}
+
+start() {
+	ebegin "Starting Filebeat-OSS ..."
+	test
+	if [[ $? -ne 0 ]]; then
+		eerror "Filebeat-OSS test failed"
+	fi
+	start-stop-daemon --start --background --user "${FB_USER}" --group "${FB_GROUP}" --pidfile "${pidfile}" --exec "${command} ${command_args}"
+}
+
+stop() {
+	ebegin "Stoping Wazuh Manger ..."
+	start-stop-daemon --stop --background --user "${WM_USER}" --group "${WM_GROUP}" --pidfile "${pidfile}"
+}
+
+restart() {
+	test
+	if [[ $? -ne 0 ]]; then
+		eerror "Filebeat-OSS test failed"
+	fi
+	stop
+	start
+}
