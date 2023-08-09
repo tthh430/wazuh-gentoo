@@ -13,7 +13,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="sys-apps/coreutils"
+DEPEND="sys-apps/coreutils
+app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
