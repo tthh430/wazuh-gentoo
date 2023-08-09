@@ -1,0 +1,25 @@
+# init file : /etc/init.d/wazuh-indexer
+
+# Wazuh Indexer user
+WI_USER="wazuh-indexer"
+
+# Wazuh Indexer group
+WI_GROUP="wazuh-indexer"
+
+# Opensearch home
+OPENSEARCH_HOME="/usr/share/wazuh-indexer"
+
+# Path to Openseach data path
+OPENSEARCH_PATH_CONF="/etc/wazuh-indexer"
+
+# Max open files - requirements 65535
+MAX_OPEN_FILES=65535
+
+# Max virtual memory - requirements 262144
+MAX_MAP_COUNT=262144
+
+# Locked in memory size
+MAX_LOCKED_MEMORY=
+
+# PID directory
+PID_DIR="/run/wazuh-indexer"

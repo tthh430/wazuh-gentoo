@@ -1,0 +1,74 @@
+#!/sbin/openrc-run
+# Copyright 2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="wazuh-indexer daemon"
+description="Wazuh Indexer"
+
+# Set default value if unset
+OPENSEARCH_HOME=${OPENSEARCH_HOME:="/usr/share/wazuh-indexer"}
+MAX_OPEN_FILES=${MAX_OPEN_FILES:=65535}
+MAX_MAP_COUNT=${MAX_MAP_COUNT:=262144}
+MAX_LOCKED_MEMORY=${MAX_LOCKED_MEMORY:=}
+OPENSEARCH_PATH_CONF=${OPENSEARCH_PATH_CONF:="/etc/wazuh-indexer"}
+WI_STARTUP_SLEEP_TIME=5
+PID_DIR=${PID_DIR:="/run/wazuh-indexer"}
+WI_USER=${WI_USER:="wazuh-indexer"}
+WI_GROUP=${WI_GROUP:="wazuh-indexer"}
+
+export WI_JAVA_OPTS
+export JAVA_HOME
+export OPENSEARCH_PATH_CONF
+export WI_STARTUP_SLEEP_TIME
+
+pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
+
+command="${OPENSEARCH_HOME}/bin/opensearch"
+#command_args="--silent --pidfile ${pidfile} --daemonize"
+command_args=""
+command_args_background="--daemonize --pidfile=${pidfile}"
+#command_args_background="--pidfile=${pidfile}"
+command_user="${WI_USER}:${WI_GROUP}"
+required_files=""
+
+depend() {
+	use net
+}
+
+start_pre() {
+	ebegin "Check requirements before start"
+	if [[ ! -x "${command}" ]]; then 
+		exit 5
+	fi
+
+	if [[ -n "${MAX_OPEN_FILES}" ]]; then
+		ulimit -n ${MAX_OPEN_FILES}
+	fi 
+
+	if [[ -n "${MAX_LOCKED_MEMORY}" ]]; then
+		ulimit -l ${MAX_LOCKED_MEMORY}
+	fi
+
+	if [ -n "${MAX_MAP_COUNT}" -a -f "/proc/sys/vm/max_map_count" ] && [[ ${MAX_MAP_COUNT} -gt $(cat /proc/sys/vm/max_map_count) ]]; then
+		sysctl	-q -w vm.max_map_count=${MAX_MAP_COUNT}
+	fi
+
+	# Ensure PID_DIR exists
+	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
+		mkdir -p "${PID_DIR}"
+		chown "${WI_USER}:${WI_GROUP} ${PID_DIR}"
+	fi
+
+	# Ensure owner of log directory
+	chown -R "${WI_USER}:${WI_GROUP}" /var/log/wazuh-indexer
+
+	# Ensure owner of config directory
+	chown -R "${WI_USER}:${WI_GROUP}" "${OPENSEARCH_PATH_CONF}"
+
+	# Ensure owner of lib directory 
+	chown -R "${WI_USER}:${WI_GROUP}" /var/lib/wazuh-indexer
+
+	# Ensure owner of opensearch home directory
+	chown -R "${WI_USER}:${WI_GROUP}" "${OPENSEARCH_HOME}"
+}
+
