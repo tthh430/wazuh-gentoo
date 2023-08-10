@@ -89,13 +89,9 @@ emerge -v www-apps/wazuh-dashboard
 ```
 
 After emerging wazuh-manager and filebeat packages, you need to complete the following steps :
-- Initialize the wazuh dashboard environment
-- Deploy certificates
 - Configure Wazuh Dashboard
-- Start the wazuh dashboard service
-- 
 
-#### 3.1 Initialize the Wazuh dashboard environment
+#### 3.1 Configure Wazuh Dashboard
 
 ```bash
 # Initialize the environment
@@ -103,32 +99,11 @@ emerge --config "=app-misc/wazuh-dashboard-<version>"
 # Replace <version> with the wazuh dashboard version
 ```
 
-#### 3.2 Configure Wazuh Dashboard
-
-To configure Wazuh Dashboard, please refer to the [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/step-by-step.html#configuring-the-wazuh-dashboard).
-
-#### 3.3 Deploy certificates
-
-To deploy certificates, you can use your own PKI or follow the wazuh documentation : 
-- [Certificates deployment](https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/step-by-step.html#deploying-certificates)
-
-#### 3.4 Start the wazuh dashboard service
-
-```bash
-# To start the service
-rc-service start wazuh-dashboard
-
-# To start the service at boot
-rc-update add wazuh-dashboard
-```
-
-Service configuration file : `/etc/conf.d/wazuh-dashboard`
-
-#### 3.4 Securing your Wazuh installation
+### 4. Securing your Wazuh installation
 
 To securize the installation, please refer to [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/step-by-step.html#securing-your-wazuh-installation).
 
-### 4. Install Wazuh Agent
+### 5. Install Wazuh Agent
 
 Please check [wazuh agent install page](https://documentation.wazuh.com/current/installation-guide/wazuh-agent/index.html) to see different awy to install it.
 
