@@ -152,6 +152,17 @@ pkg_config() {
         rc-update add wazuh-dashboard
     fi
 
+	# Access to dashboard
+	einfo "To access to the Wazuh dashboard :" 
+	einfo "URL : https://<wazuh-dashboard-ip>"
+	einfo "Username : admin"
+	einfo "Password : admin"
+	einfo "Replace 'wazuh-dashboard-ip' with the Wazuh dashboard IP" 
+	einfo
+	einfo "Don't forget to secure your installation"
+	einfo "PLease refer to wazuh official documentation to do it"
+
+
 
 
 	#read -p "Which installation mode is used ? [standalone/distributed] " install_mode
