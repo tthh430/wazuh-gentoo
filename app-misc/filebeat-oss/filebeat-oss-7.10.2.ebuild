@@ -161,6 +161,11 @@ pkg_config() {
 		exit 1
 	fi
 
+	if [[ ! -s "${certificates_path}" ]]; then
+		eerror "${certificates_path} does not exist or is empty"
+		error 1
+	fi 
+
 	export NODE_NAME="${node_name}"
     mkdir -p /etc/filebeat/certs
 	tar -xf "${certificates_path}" -C /etc/filebeat/certs/ ./${NODE_NAME}.pem ./${NODE_NAME}-key.pem ./root-ca.pem
