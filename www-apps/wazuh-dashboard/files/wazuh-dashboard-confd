@@ -1,0 +1,16 @@
+# init file : /etc/init.d/wazuh-dashboard
+
+# Wazuh Dashboard user
+WD_USER="wazuh-dashboard"
+
+# Wazuh Dashboard group
+WD_GROUP="wazuh-dashboard"
+
+# Wazuh Dashboard home
+WD_HOME="/usr/share/wazuh-dashboard"
+
+# Wazuh Dashboard config directory
+WD_HOME="/etc/wazuh-dashboard"
+
+# PID directory
+PID_DIR="/run/wazuh-dashboard"
