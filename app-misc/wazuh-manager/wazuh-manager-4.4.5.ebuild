@@ -13,7 +13,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="=app-misc/filebeat-oss-7.10.2"
+DEPEND="=app-misc/filebeat-oss-7.10.2
+app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
@@ -36,7 +37,7 @@ pkg_postinst() {
 	elog "\t- Configure Wazuh Manager"
 	elog
 
-	elog "Execute the following command to initialize environment:"
+	elog "Execute the following command to configure Wazuh Manager"
 	elog
 	elog "\t# emerge --config \"=${CATEGORY}/${PF}\""
 	elog
