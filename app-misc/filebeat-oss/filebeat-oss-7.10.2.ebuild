@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND=""
+DEPEND="=app-misc/wazuh-manager-4.4.5"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
@@ -34,9 +34,7 @@ src_install(){
 pkg_postinst() {
 	elog "To finish the Filebeat-oss install, you need to follow the following step:"
 	elog
-	elog "\t- Initialiaze the environment"
-	elog "\t- Deploy certificates"
-	elog "\t- Start the service"
+	elog "\t- Configure Filebeat"
 	elog "\t- Test filebeat"
 	elog
 
@@ -44,62 +42,151 @@ pkg_postinst() {
 	elog
 	elog "\t# emerge --config \"=${CATEGORY}/${PF}\""
 	elog
-
-	elog "Start the service"
-	elog
-	elog "\t# /etc/init.d/filebeat-oss start"
-	elog "To start the service at boot"
-	elog "\t# rc-update add filebeat-oss"
-	elog
-
-	elog "To test filebeat installation, run the following command:"
-	elog "\t# sudo -u <filebeat-oss user> /usr/share/filebeat/bin/filebeat test output"
 }
 
 pkg_config() {
 
 	# Create filebeat-oss user
-	WM_USER="filebeat-oss"
-	if [[ $(getent passwd "${WM_USER}" | grep -c "${WM_USER}") -eq 0 ]]; then
-        einfo "${WM_USER} user does not exist"
-        einfo "Creating ${WM_USER} user"
-        useradd -d /dev/null -c "Filebeat-oss user" -M -r -U -s /sbin/nologin "${WM_USER}" > /dev/null
+	FB_USER="filebeat-oss"
+	if [[ $(getent passwd "${FB_USER}" | grep -c "${FB_USER}") -eq 0 ]]; then
+        einfo "${FB_USER} user does not exist"
+        einfo "Creating ${FB_USER} user"
+        useradd -d /dev/null -c "Filebeat-oss user" -M -r -U -s /sbin/nologin "${FB_USER}" > /dev/null
 
-        if  [[ $(getent passwd ${WM_USER} | grep -c "${WM_USER}") -eq 1 ]]; then
-            eeinfo "${WM_USER} user created"
+        if  [[ $(getent passwd ${FB_USER} | grep -c "${FB_USER}") -eq 1 ]]; then
+            einfo "${FB_USER} user created"
         else
-            eerror "Error during ${WM_USER} user creation"
+            eerror "Error during ${FB_USER} user creation"
         fi
 	else
-		einfo "${WM_USER} user already exist. Skip"
+		einfo "${FB_USER} user already exist. Skip"
     fi
 
+	# Configuring Filebeat
+	read -p "Wazuh indexer node name or IP : " wazuh_indexer
+
+	if [[ -z "${wazuh_indexer}" ]]; then 
+        eerror "Empty value not allowed !"
+        exit 1
+    fi 
+
+	# Write filebeat configuration file
+	filebeat_configuration_path="/etc/filebeat/filebeat.yml"
+
+	echo -e "output.elasticsearch:" > ${filebeat_configuration_path}
+	echo -e "  hosts: [\"${wazuh_indexer}:9200\"]" >> ${filebeat_configuration_path}
+	echo -e "  protocol: https" >> ${filebeat_configuration_path}
+	echo -e "  username: \$\{username\}" >> ${filebeat_configuration_path}
+	echo -e "  password: \$\{password\}" >> ${filebeat_configuration_path}
+	echo -e "  ssl.certificate_authorities:" >> ${filebeat_configuration_path}
+	echo -e "    - /etc/filebeat/certs/root-ca.pem" >> ${filebeat_configuration_path}
+	echo -e "  ssl.certificate: \"/etc/filebeat/certs/filebeat.pem\"" >> ${filebeat_configuration_path}
+	echo -e "  ssl.key: \"/etc/filebeat/certs/filebeat-key.pem\"" >> ${filebeat_configuration_path}
+	echo -e "setup.template.json.enabled: true" >> ${filebeat_configuration_path}
+	echo -e "setup.template.json.path: '/etc/filebeat/wazuh-template.json'" >> ${filebeat_configuration_path}
+	echo -e "setup.template.json.name: 'wazuh'" >> ${filebeat_configuration_path}
+	echo -e "setup.ilm.overwrite: true" >> ${filebeat_configuration_path}
+	echo -e "setup.ilm.enabled: false" >> ${filebeat_configuration_path}
+	echo -e "" >> ${filebeat_configuration_path}
+	echo -e "filebeat.modules:" >> ${filebeat_configuration_path}
+	echo -e "  - module: wazuh" >> ${filebeat_configuration_path}
+	echo -e "    alerts:" >> ${filebeat_configuration_path}
+	echo -e "      enabled: true" >> ${filebeat_configuration_path}
+	echo -e "    archives:" >> ${filebeat_configuration_path}
+	echo -e "      enabled: false" >> ${filebeat_configuration_path}
+	echo -e "" >> ${filebeat_configuration_path}
+	echo -e "logging.level: info" >> ${filebeat_configuration_path}
+	echo -e "logging.to_files: true" >> ${filebeat_configuration_path}
+	echo -e "logging.files:" >> ${filebeat_configuration_path}
+	echo -e "  path: /var/log/filebeat" >> ${filebeat_configuration_path}
+	echo -e "  name: filebeat" >> ${filebeat_configuration_path}
+	echo -e "  keepfiles: 7" >> ${filebeat_configuration_path}
+	echo -e "  permissions: 0644" >> ${filebeat_configuration_path}
+	echo -e "" >> ${filebeat_configuration_path}
+	echo -e "logging.metrics.enabled: false" >> ${filebeat_configuration_path}
+	echo -e "" >> ${filebeat_configuration_path}
+	echo -e "seccomp:" >> ${filebeat_configuration_path}
+	echo -e "  default_action: allow" >> ${filebeat_configuration_path}
+	echo -e "  syscalls:" >> ${filebeat_configuration_path}
+	echo -e "  - action: allow" >> ${filebeat_configuration_path}
+	echo -e "    names:" >> ${filebeat_configuration_path}
+	echo -e "    - rseq" >> ${filebeat_configuration_path}
+
+    # Change owner of important directories to filebeat-oss user
 	einfo "Set the right owner to the filebeat bin"
-	chown "${WM_USER}:${WM_USER} /usr/bin/filebeat"
+	chown "${FB_USER}:${FB_USER} /usr/bin/filebeat"
 
 	einfo "Set the right owner to the filebeat directory config"
-	chown -R "${WM_USER}:${WM_USER} /etc/filebeat"
+	chown -R "${FB_USER}:${FB_USER} /etc/filebeat"
 
 	einfo "Set the right owner to the filebeat home directory"
-	chown -R "${WM_USER}:${WM_USER} /usr/share/filebeat"
-
-	einfo "Download preconfigured filebeat configuration file"
-	curl -so /etc/filebeat/filebeat.yml https://packages.wazuh.com/4.4/tpl/wazuh/filebeat/filebeat.yml
+	chown -R "${FB_USER}:${FB_USER} /usr/share/filebeat"
 
 	einfo "Create a Filebeat keystore to securely store authentication credentials"
-	sudo -u "${WM_USER}" /usr/share/filebeat/bin/filebeat keystore create
+	sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat keystore create
 
 	einfo "Add the default credentials to the keystore"
 	einfo "\tDefault username : admin"
 	einfo "\tDefault password : admin"
-	echo admin | sudo -u "${WM_USER}" /usr/share/filebeat/bin/filebeat add username --stdin --force
-	echo admin | sudo -u "${WM_USER}" /usr/share/filebeat/bin/filebeat add password --stdin --force
+	echo admin | sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat add username --stdin --force
+	echo admin | sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat add password --stdin --force
 
 	einfo "Download the alerts template for the Wazuh indexer"
 	curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
-	chown -R "${WM_USER}:${WM_USER} /etc/filebeat"
+	chown -R "${FB_USER}:${FB_USER} /etc/filebeat"
+	chmod go+r /etc/filebeat/wazuh-template.json
 
 	einfo "Install the Wazuh module for filebeat"
 	curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.2.tar.gz | tar -xvz -C /usr/share/filebeat/module
-	chown -R "${WM_USER}:${WM_USER} /usr/share/filebeat"
+	chown -R "${FB_USER}:${FB_USER} /usr/share/filebeat"
+
+	# Deploy certificates
+	einfo "Deploying certificates"
+	einfo
+
+	einfo "Node name must match name in certificates"
+	read -p "Node name : " node_name
+
+	if [[ -z ${node_name} ]]; then
+        eerror "Empty value not allowed !"
+		exit 1
+	fi
+
+	read -p "Certificates tar file path on node : " certificates_path
+
+	if [[ -z ${certificates_path} ]]; then
+        eerror "Empty value not allowed !"
+		exit 1
+	fi
+
+	export NODE_NAME="${node_name}"
+    mkdir -p /etc/filebeat/certs
+	tar -xf "${certificates_path}" -C /etc/filebeat/certs/ ./${NODE_NAME}.pem ./${NODE_NAME}-key.pem ./root-ca.pem
+	mv -n /etc/filebeat/certs/${NODE_NAME}.pem /etc/filebeat/certs/filebeat.pem
+	mv -n /etc/filebeat/certs/${NODE_NAME}-key.pem /etc/filebeat/certs/filebeat-key.pem
+	chmod 500 /etc/filebeat/certs
+	chmod 400 /etc/filebeat/certs/*
+	chown -R "${FB_USER}":"${FB_USER}" /etc/filebeat/certs
+
+	# Start Filebeat service
+	einfo
+	einfo "Start Filebeat service"
+	einfo
+	/etc/init.d/filebeat-oss start
+
+	read -p "Would you like to start Filebeat service at boot ? [y/n] " start_at_boot
+	
+	if [[ -z "${start_at_boot}" ]]; then
+        eerror "Empty value not allowed !"
+        exit 1
+    fi 
+
+    if [[ "${start_at_boot}" == "y" ]]; then
+        rc-update add filebeat-oss
+    fi
+
+	# Test installation
+	einfo "To test the installation run the following command :"
+	einfo "sudo -u ${FB_USER} /usr/share/filebeat/bin/filebeat test config"
+	einfo "sudo -u ${FB_USER} /usr/share/filebeat/bin/filebeat test output"
 }
