@@ -116,7 +116,7 @@ pkg_config() {
 
 	if [[ ! -s "${certificates_path}" ]]; then
 		eerror "${certificates_path} does not exist or is empty"
-		error 1
+		exit 1
 	fi 
 
 	export NODE_NAME="${node_name}"
