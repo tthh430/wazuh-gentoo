@@ -33,12 +33,12 @@ cp -pPR "${S}"/etc "${D}"/ || die "Failed to copy files"
 }
 
 pkg_postinst() {
-	elog "To finish the Wazuh Dashboard install, you need to follow the following step:"
+	elog "To finish the Wazuh Dashboard install, you need to follow the following step :"
 	elog
 	elog "\t- Configure Wazuh Dashboard"
 	elog
 
-	elog "Execute the following command to initialize the environment:"
+	elog "Execute the following command to initialize the environment :"
 	elog
 	elog "\t# emerge --config \"=${CATEGORY}/${PF}\""
 	elog
