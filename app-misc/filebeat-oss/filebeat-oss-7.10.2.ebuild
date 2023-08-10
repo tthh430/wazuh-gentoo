@@ -34,7 +34,7 @@ src_install(){
 }
 
 pkg_postinst() {
-	elog "To finish the Filebeat-oss install, you need to follow the following step:"
+	elog "To finish the Filebeat-oss install, you need to follow the following step :"
 	elog
 	elog "\t- Configure Filebeat"
 	elog "\t- Test filebeat"
@@ -163,7 +163,7 @@ pkg_config() {
 
 	if [[ ! -s "${certificates_path}" ]]; then
 		eerror "${certificates_path} does not exist or is empty"
-		error 1
+		exit 1
 	fi 
 
 	export NODE_NAME="${node_name}"
