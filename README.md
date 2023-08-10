@@ -47,14 +47,11 @@ emerge -v app-misc/wazuh-server
 ```
 
 After emerging wazuh-manager and filebeat packages, you need to complete the following steps :
-- Initialize the wazuh manager environment
-- Start the wazuh manager service
-- Initialize the Filebeat environment
-- Deploy certificates
-- Start the filebeat service
-- Test Filebeat installation
+- Configure Wazuh manager
+- Configure Filebeat
+- Test installation
 
-#### 2.1 Initialize the Wazuh manager environment
+#### 2.1 Configure Wazuh manager
 
 ```bash
 # Initialize the environment
@@ -62,20 +59,7 @@ emerge --config "=app-misc/wazuh-manager-<version>"
 # Replace <version> with the wazuh manager version
 ```
 
-#### 2.2 Start the wazuh manager service
-
-```bash
-# To start the service
-rc-service start wazuh-manager
-
-# To start the service at boot
-rc-update add wazuh-manager
-```
-
-Service configuration file : `/etc/conf.d/wazuh-manager`
-
-
-#### 2.3 Initialize the Filebeat environment
+#### 2.2 Configure Filebeat
 
 ```bash
 # Initialize the environment
@@ -83,24 +67,9 @@ emerge --config "=app-misc/filebeat-oss-<version>"
 # Replace <version> with the filebeat version
 ```
 
-#### 2.4 Deploy certificates
+#### 2.3 Test Filebeat installation
 
-To deploy certificates, you can use your own PKI or follow the wazuh documentation : 
-- [Certificates deployment](https://documentation.wazuh.com/current/installation-guide/wazuh-server/step-by-step.html#deploying-certificates)
-
-#### 2.5 Start the filebeat service
-
-```bash
-# To start the service
-rc-service start filebeat-oss
-
-# To start the service at boot
-rc-update add filebeat-oss
-```
-
-Service configuration file : `/etc/conf.d/filebeat-oss`
-
-#### 2.6 Test Filebeat installation
+To test the installation, please refer to the [Wazuh documentation](https://documentation.wazuh.com/current/installation-guide/wazuh-server/step-by-step.html#starting-the-filebeat-service)
 
 ```bash
 # To test the filebeat configuration

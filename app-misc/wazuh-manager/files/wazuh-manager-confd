@@ -1,0 +1,13 @@
+# init file : /etc/init.d/wazuh-indexer
+
+# Wazuh Manager user
+WM_USER="wazuh-manager"
+
+# Wazuh Manager group
+WM_GROUP="wazuh-manager"
+
+# Wazuh Manager home
+WM_HOME="/var/ossec"
+
+# PID directory
+PID_DIR="/run/wazuh-manager"
