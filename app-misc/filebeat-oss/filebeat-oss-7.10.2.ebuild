@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="=app-misc/wazuh-manager-4.4.5"
+DEPEND="=app-misc/wazuh-manager-4.4.5
+app-arch/rpm2targz
+app-admin/sudo"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
