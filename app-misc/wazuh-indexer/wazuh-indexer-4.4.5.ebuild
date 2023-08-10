@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 DEPEND="sys-apps/coreutils
-app-arch/rpm2targz"
+app-arch/rpm2targz
+app-admin/sudo"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
@@ -38,23 +39,35 @@ src_install(){
     newconfd "${FILESDIR}"/wazuh-indexer-confd wazuh-indexer
 }
 
+pkg_postinst() {
+	elog "To finish the Wazuh Indexer install, you need to follow the following step :"
+	elog
+	elog "\t- Configure Wazuh indexer"
+	elog
+
+	elog "Execute the following command to configure Wazuh indexer"
+	elog
+	elog "\t# emerge --config \"=${CATEGORY}/${PF}\""
+	elog
+}
+
 pkg_config() {
 
     # Create wazuh-indexer user
-    wazuh_indexer_user="wazuh-indexer"
-    if [[ $(getent passwd "${wazuh_indexer_user}" | grep -c "${wazuh_indexer_user}") -eq 0 ]]; then
-        einfo "${wazuh_indexer_user} user does not exist"
-        einfo "Creating ${wazuh_indexer_user} user"
-        useradd -d /dev/null -c "Wazuh Indexer user" -M -r -U -s /sbin/nologin "${wazuh_indexer_user}" > /dev/null
+    WI_USER="wazuh-indexer"
+    if [[ $(getent passwd "${WI_USER}" | grep -c "${WI_USER}") -eq 0 ]]; then
+        einfo "${WI_USER} user does not exist"
+        einfo "Creating ${WI_USER} user"
+        useradd -d /dev/null -c "Wazuh Indexer user" -M -r -U -s /sbin/nologin "${WI_USER}" > /dev/null
    
-        if  [[ $(getent passwd "${wazuh_indexer_user}" | grep -c "${wazuh_indexer_user}") -eq 1 ]]; then
-            einfo "${wazuh_indexer_user} user created"
+        if  [[ $(getent passwd "${WI_USER}" | grep -c "${WI_USER}") -eq 1 ]]; then
+            einfo "${WI_USER} user created"
         else
-            eerror "Error during ${wazuh_indexer_user} user creation"
+            eerror "Error during ${WI_USER} user creation"
             exit 1
         fi
     else
-        einfo "${wazuh_indexer_user} user already exist. Skip!"
+        einfo "${WI_USER} user already exist. Skip!"
     fi
     einfo
 
@@ -161,6 +174,11 @@ pkg_config() {
                 # Remove certs creation dir
                 rm -rf ./wazuh-certificates
 
+	            if [[ ! -s "./wazuh-certificates.tar" ]]; then
+	            	eerror "Issue when creating certificates !"
+	            	exit 1
+	            fi 
+
                 einfo "Wazuh certs are in ${certs_working_dir}/wazuh-certificiates.tar"
                 einfo "Copy the wazuh-certificates.tar file to all nodes if you use distributed deployment"
                 einfo "Use the same directory (${certs_working_dir}) and the tar file name in all nodes to deploy automatically certificates"
@@ -236,6 +254,11 @@ pkg_config() {
     einfo "Deploying certificates"
     einfo
 
+	if [[ ! -s "${certs_working_dir}/wazuh-certificates.tar" ]]; then
+		eerror "${certs_working_dir}/wazuh-certificates.tar does not exist or is empty"
+		exit 1
+	fi 
+
     export NODE_NAME="${indexer_name}"
     mkdir -p /etc/wazuh-indexer/certs
     cd ${certs_working_dir}
@@ -246,14 +269,14 @@ pkg_config() {
     chmod 400 /etc/wazuh-indexer/certs/*
 
     # Change owner of important directories to wazuh-indexer user
-    einfo "Change owner of /usr/share/wazuh-indexer to ${wazuh_indexer_user}"
-    chown -R "${wazuh_indexer_user}":"${wazuh_indexer_user}" /usr/share/wazuh-indexer
+    einfo "Change owner of /usr/share/wazuh-indexer to ${WI_USER}"
+    chown -R "${WI_USER}":"${WI_USER}" /usr/share/wazuh-indexer
 
-    einfo "Change owner of /etc/wazuh-indexer to ${wazuh_indexer_user}"
-    chown -R "${wazuh_indexer_user}":"${wazuh_indexer_user}" /etc/wazuh-indexer
+    einfo "Change owner of /etc/wazuh-indexer to ${WI_USER}"
+    chown -R "${WI_USER}":"${WI_USER}" /etc/wazuh-indexer
 
-    einfo "Change owner of /var/log/wazuh-indexer to ${wazuh_indexer_user}"
-    chown -R "${wazuh_indexer_user}":"${wazuh_indexer_user}" /var/log/wazuh-indexer
+    einfo "Change owner of /var/log/wazuh-indexer to ${WI_USER}"
+    chown -R "${WI_USER}":"${WI_USER}" /var/log/wazuh-indexer
 
     # Start wazuh-indexer service
     einfo
@@ -278,12 +301,12 @@ pkg_config() {
     /usr/share/wazuh-indexer/bin/indexer-security-init.sh
 
     # Test installation
-    einfo "To test the installation ru nthe following command :"
-    einfo "curl -k -u admin:admin https://<wazuh-indexer-ip>:9200"
-    einfo "PLease replace 'wazuh-indexer-ip' with your wazuh indexer ip"
+    einfo "To test the installation run the following command :"
+    einfo "# curl -k -u admin:admin https://<wazuh-indexer-ip>:9200"
+    einfo "Replace 'wazuh-indexer-ip' with your wazuh indexer ip"
     einfo
 
     einfo "To check if the single node is working correctly, please the following command :"
-    einfo "curl -k -u admin:admin https://<wazuh-indexer-ip>:9200/_cat/nodes?v"
-    einfo "PLease replace 'wazuh-indexer-ip' with your wazuh indexer ip"
+    einfo "# curl -k -u admin:admin https://<wazuh-indexer-ip>:9200/_cat/nodes?v"
+    einfo "Replace 'wazuh-indexer-ip' with your wazuh indexer ip"
 }
