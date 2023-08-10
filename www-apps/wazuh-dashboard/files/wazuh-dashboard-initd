@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+# Copyright 2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="wazuh-manager daemon"
+description="Wazuh Manager"
+
+# Set default value if unset
+WD_HOME=${WD_HOME:="/usr/share/wazuh-dashboard"}
+WD_CONFIG_DIR=${WD_CONFIG_DIR:="/etc/wazuh-dashboard"}
+PID_DIR=${PID_DIR:="/run/wazuh-dashboard"}
+WD_USER=${WD_USER:="wazuh-dashboard"}
+WD_GROUP=${WD_GROUP:="wazuh-dashboard"}
+
+pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
+
+command="${WD_HOME}/bin/opensearch-dashboards"
+command_args="-c ${WD_CONFIG_DIR}/opensearch_dashboards.yml"
+#command_args_background="--pidfile=${pidfile}"
+required_files=""
+
+depend() {
+	use net
+}
+
+start_pre() {
+	# Ensure PID_DIR exists
+	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
+		mkdir -p "${PID_DIR}"
+		chown "${WI_USER}:${WI_GROUP} ${PID_DIR}"
+	fi
+
+	# Ensure owner of wazuh dashboard home directory
+	chown -R "${WD_USER}:${WD_GROUP}" "${WD_HOME}"
+
+	# Ensure owner of wazuh dashboard config directory
+	chown -R "${WD_USER}:${WD_GROUP}" "${WD_CONFIG_DIR}"
+}
