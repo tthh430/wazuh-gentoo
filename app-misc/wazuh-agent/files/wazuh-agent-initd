@@ -1,0 +1,49 @@
+#!/sbin/openrc-run
+# Copyright 2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="wazuh-agent daemon"
+description="Wazuh agent"
+
+# Set default value if unset
+WA_HOME=${WA_HOME:="/var/ossec"}
+PID_DIR=${PID_DIR:="/run/wazuh-agent"}
+WA_USER=${WA_USER:="wazuh-agent"}
+WA_GROUP=${WA_GROUP:="wazuh-agent"}
+
+pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
+
+command="${WA_HOME}/bin/wazuh-control"
+command_args=""
+#command_args_background="--pidfile=${pidfile}"
+required_files=""
+
+depend() {
+	use net
+}
+
+start_pre() {
+	# Ensure PID_DIR exists
+	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
+		mkdir -p "${PID_DIR}"
+		chown "${WA_USER}:${WA_GROUP} ${PID_DIR}"
+	fi
+
+	# Ensure owner of wazuh agent home directory
+	chown -R "${WA_USER}:${WA_GROUP}" "${WA_HOME}"
+}
+
+start() {
+	ebegin "Starting Wazuh agent ..."
+	start-stop-daemon --start --background --user "${WA_USER}" --group "${WA_GROUP}" --pidfile "${pidfile}" --exec "${command} start > /dev/null"
+}
+
+stop() {
+	ebegin "Stoping Wazuh Manger ..."
+	start-stop-daemon --stop --background --user "${WA_USER}" --group "${WA_GROUP}" --pidfile "${pidfile}" --exec "${command} stop > /dev/null"
+}
+
+status() {
+	ebegin "Wazuh agent status"
+	sudo -u "${WA_USER} ${command} status"
+}
