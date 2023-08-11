@@ -17,6 +17,8 @@ DEPEND="app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
+S="${WORKDIR}"
+
 QA_PREBUILT="var/ossec/*
 usr/lib/*
 etc/rc.d/init.d/wazuh-agent"
