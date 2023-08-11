@@ -111,10 +111,12 @@ Please check [wazuh agent install page](https://documentation.wazuh.com/current/
 # To install wazuh agent
 WAZUH_MANAGER="<wazuh-manager-ip>" emerge -v app-misc/wazuh-agent
 # Replace wazuh-manager-ip with your wazuh manager IP
+```
 
-# To start the service
-rc-service start wazuh-agent
+#### 5.1 Configure Wazuh Agent
 
-# To start the service at boot
-rc-update add wazuh-agent
+```bash
+# Initialize the environment
+emerge --config "=app-misc/wazuh-agent-<version>"
+# Replace <version> with the wazuh agent version
 ```
