@@ -52,7 +52,7 @@ pkg_config() {
         useradd -d /dev/null -c "Wazuh Agent user" -M -r -U -s /sbin/nologin "${WA_USER}" > /dev/null
 
         if  [[ $(getent passwd ${WA_USER} | grep -c "${WA_USER}") -eq 1 ]]; then
-            eeinfo "${WA_USER} user  created"
+            einfo "${WA_USER} user  created"
         else
             eerror "Error during ${WA_USER} user creation"
 			exit 1
