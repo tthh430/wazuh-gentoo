@@ -1,5 +1,7 @@
 # Wazuh Gentoo Repository
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/81c97d67f8d941a98e3573b4ea372e83)](https://app.codacy.com/gh/tthh430/wazuh-gentoo/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 Gento Wazuh ebuilds
 
 Wazuh home : [https://wazuh.com](https://wazuh.com)
@@ -34,7 +36,7 @@ sync-ury = https://github.com....
 
 ### Global information and requitements
 
-* PLease check Wazuh official documentation to be sure to have latest informations 
+  * PLease check Wazuh official documentation to be sure to have latest informations 
 * You need root user privileges to install each component
 * Please check the bug section to known known bugs and their workaround
 
