@@ -54,7 +54,7 @@ pkg_config() {
         useradd -d /dev/null -c "Wazuh Dashboard user" -M -r -U -s /sbin/nologin "${WD_USER}" > /dev/null
 
         if  [[ $(getent passwd ${WD_USER} | grep -c "${WD_USER}") -eq 1 ]]; then
-            eeinfo "${WD_USER} user  created"
+            einfo "${WD_USER} user  created"
         else
             eerror "Error during ${WD_USER} user creation"
 			exit 1
