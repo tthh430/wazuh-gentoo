@@ -79,123 +79,6 @@ pkg_config() {
         sed -i 's%/usr/bin/bash%/bin/bash%g' "${line}"
     done
 
-    # Certifcates
-    read -p "Would you like to use your own PKI or use the wazuh tools to create certificates ? [pki/wazuh] " certificate
-
-    if [[ -n "${certificate}" ]]; then
-        case "${certificate}" in 
-            "pki")
-                einfo "Please refer to the documentation to know where install your certificates"
-                einfo
-                ;;
-            
-            "wazuh")
-                einfo "Wazuh script will be use to generate certificates"
-
-                certs_working_dir="/usr/share/wazuh-certificates"
-                certs_config_file="${certs_working_dir}/config.yml"
-                einfo "Creating working directoy for certificates generation : ${certs_working_dir}"
-                mkdir -p "${certs_working_dir}"
-                cd "${certs_working_dir}"
-
-                einfo "Downloading Wazuh script"
-                curl -sO https://packages.wazuh.com/4.4/wazuh-certs-tool.sh
-
-                einfo "Script does not support clustering (multi nodes of each component) deployment"
-                einfo "Only standalone (all on the the same server) and distributed (one node of each component) deployment"
-                read -p "Which kind of deployment will you use ? [standalone/distributed] " deployment_method
-
-                if [[ -n "${deployment_method}" ]]; then
-                    case "${deployment_method}" in
-                        "standalone")
-                            read -p "Node name : " node_name
-                            read -p "Node IP : " node_ip
-
-                            if [[ -z "${node_name}" || -z "${node_ip}" ]]; then
-                                eerror "Please feel node name and node ip"
-                                exit 1
-                            fi
-
-                            indexer_name=${node_name}
-                            indexer_ip=${node_ip}
-                            server_name=${node_name}
-                            server_ip=${node_ip}
-                            dashboard_name=${node_name}
-                            dashboard_ip=${node_ip}
-                            ;;
-
-                        "distributed")
-                            read -p "Indexer name : " indexer_name
-                            read -p "Indexer IP : " indexer_ip
-                            read -p "Server name : " server_name
-                            read -p "Server IP : " server_ip
-                            read -p "Dashboard name : " dashboard_name
-                            read -p "Dashboard IP : " dashboard_ip
-
-                            if [[ -z "${indexer_name}" || -z "${indexer_ip}" || -z "${server_name}" || -z "${server_ip}" || -z "${dashboard_name}" || -z "${dashboard_ip}" ]]; then
-                                eerror "Please feel indexer, server, dashboard nodes information (name and ip)"
-                                exit 1
-                            fi
-                            ;;
-
-                        *)
-                            eerror "Unknown option !"
-                            eerror "Authorize values : 'standalone' or 'distributed'"
-                            exit 1 
-
-                            ;;
-                    esac
-                else
-                    eerror "Empty value not allowed !"
-                    eerror "Authorize values : 'standalone' or 'distributed'"
-                    exit 1
-                fi
-
-                # Write config file
-                # Indexer nodes part
-                echo -e "nodes:" > ${certs_config_file}
-                echo -e "  indexer:" >> ${certs_config_file}
-                echo -e "    - name: ${indexer_name}" >> ${certs_config_file}
-                echo -e "      ip: ${indexer_ip}" >> ${certs_config_file}
-                echo >> ${certs_config_file}
-                echo -e "  server:" >> ${certs_config_file}
-                echo -e "    - name: ${server_name}" >> ${certs_config_file}
-                echo -e "      ip: ${server_ip}" >> ${certs_config_file}
-                echo -e "  dashboard:" >> ${certs_config_file}
-                echo -e "    - name: ${dashboard_name}" >> ${certs_config_file}
-                echo -e "      ip: ${dashboard_ip}" >> ${certs_config_file}
-                
-                # Generate certificates
-                bash ./wazuh-certs-tool.sh -A
-
-                # Compress all the necessary files
-                tar -cvf ./wazuh-certificates.tar -C ./wazuh-certificates/ .
-
-                # Remove certs creation dir
-                rm -rf ./wazuh-certificates
-
-	            if [[ ! -s "./wazuh-certificates.tar" ]]; then
-	            	eerror "Issue when creating certificates !"
-	            	exit 1
-	            fi 
-
-                einfo "Wazuh certs are in ${certs_working_dir}/wazuh-certificiates.tar"
-                einfo "Copy the wazuh-certificates.tar file to all nodes if you use distributed deployment"
-                einfo "Use the same directory (${certs_working_dir}) and the tar file name in all nodes to deploy automatically certificates"
-                ;;
-            *)
-                eerror "Unknown option !"
-                eerror "Authorize values : 'pki' or 'wazuh'"
-                exit 1
-                ;;
-        esac
-    else
-        eerror "Empty value not allowed !"
-        eerror "Authorize values : 'pki' or 'wazuh'"
-        exit 1
-    fi
-    einfo
-
     # Configuring the wazuh indexer
     wazuh_indexer_config_file="/etc/wazuh-indexer/opensearch.yml"
     einfo "Configuring Wazuh indexer"
@@ -212,6 +95,13 @@ pkg_config() {
         eerror "Empty value not allowed !"
         exit 1
     fi 
+
+    read -p "Indexer name (must bind name in certs) : " indexer_name
+
+    if [[ -z "${indexer_name}" ]]; then
+        eeror "Empty velue not allowed"
+        exit 1 
+    fi
 
     read -p "Cluster name : " cluster_name
 
@@ -251,18 +141,25 @@ pkg_config() {
     echo -e "- \"security_rest_api_access\"" >> ${wazuh_indexer_config_file}
 
     # Deploy certificates
-    einfo "Deploying certificates"
-    einfo
 
-	if [[ ! -s "${certs_working_dir}/wazuh-certificates.tar" ]]; then
-		eerror "${certs_working_dir}/wazuh-certificates.tar does not exist or is empty"
+    read -p "Certificates tar file path on node : " certificates_path
+
+	if [[ -z ${certificates_path} ]]; then
+        eerror "Empty value not allowed !"
+		exit 1
+	fi
+
+	if [[ ! -s "${certificates_path}" ]]; then
+		eerror "${certificates_path} does not exist or is empty"
 		exit 1
 	fi 
 
+    einfo "Deploying certificates"
+    einfo
+
     export NODE_NAME="${indexer_name}"
     mkdir -p /etc/wazuh-indexer/certs
-    cd ${certs_working_dir}
-    tar -xf ./wazuh-certificates.tar -C /etc/wazuh-indexer/certs/ ./${NODE_NAME}.pem ./${NODE_NAME}-key.pem ./admin.pem ./admin-key.pem ./root-ca.pem
+    tar -xf "${certificates_path}" -C /etc/wazuh-indexer/certs/ ./${NODE_NAME}.pem ./${NODE_NAME}-key.pem ./admin.pem ./admin-key.pem ./root-ca.pem
     mv -n /etc/wazuh-indexer/certs/${NODE_NAME}.pem /etc/wazuh-indexer/certs/indexer.pem
     mv -n /etc/wazuh-indexer/certs/${NODE_NAME}-key.pem /etc/wazuh-indexer/certs/indexer-key.pem
     chmod 500 /etc/wazuh-indexer/certs
