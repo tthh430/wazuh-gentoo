@@ -1,5 +1,7 @@
 # Wazuh Gentoo Repository
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7c296f154be2472ab330739575e44b05)](https://app.codacy.com/gh/tthh430/wazuh-gentoo?utm_source=github.com&utm_medium=referral&utm_content=tthh430/wazuh-gentoo&utm_campaign=Badge_Grade)
+
 Gento Wazuh ebuilds
 
 Wazuh home : [https://wazuh.com](https://wazuh.com)
