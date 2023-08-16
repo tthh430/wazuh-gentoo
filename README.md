@@ -19,6 +19,7 @@ Wazuh home : [https://wazuh.com](https://wazuh.com)
 &nbsp;&nbsp;&nbsp;&nbsp;[4. Securing your Wazuh installation](#4-securing-your-wazuh-installation)\
 &nbsp;&nbsp;&nbsp;&nbsp;[5. Install Wazuh agent](#5-install-wazuh-agent)\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.1 Configure Wazuh agent](#51-configure-wazuh-agent)
+[Known bugs](#known-bugs)
 
 ## Add the repository
 
@@ -36,7 +37,7 @@ sync-uri = https://github.com/tthh430/wazuh-gentoo
 
 * PLease check Wazuh official documentation to be sure to have latest informations 
 * You need root user privileges to install each component
-* Please check the bug section to known known bugs and their workaround
+* Please check the [bug section](#known-bugs) to see known bugs and their workaround
 
 ### 1. Install Wazuh indexer
 
@@ -160,3 +161,4 @@ echo "app-misc/wazuh-agent ~amd64" >> /etc/portage/package.accept_keywords/wazuh
 emerge --config "=app-misc/wazuh-agent-<version>"
 # Replace <version> with the wazuh agent version
 ```
+## Known bugs
