@@ -4,6 +4,22 @@ Gento Wazuh ebuilds
 
 Wazuh home : [https://wazuh.com](https://wazuh.com)
 
+[Add the repository](#add-the-repository)\
+[Install Wazuh](#install-wazuh)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Global information and requirements](#global-information-and-requitements)\
+&nbsp;&nbsp;&nbsp;&nbsp;[1. Install Wazuh indexer](#1-install-wazuh-indexer)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Configure Wazuh indexer](#11-configure-wazuh-indexer)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Check the installation](#12-check-the-installation)\
+&nbsp;&nbsp;&nbsp;&nbsp;[2.Install Wazuh server](#2-install-wazuh-server)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.1 Configure Wazuh manager](#21-configure-wazuh-manager)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2 Configure Filebeat](#22-configure-filebeat)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.3 Test Filebeat installation](#23-test-filebeat-installation)\
+&nbsp;&nbsp;&nbsp;&nbsp;[3. Install Wazuh dashboard](#3-install-wazuh-dashboad)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[3.1 Configure Wazuh dashboard](#31-configure-wazuh-dashboard)\
+&nbsp;&nbsp;&nbsp;&nbsp;[4. Securing your Wazuh installation](#4-securing-your-wazuh-installation)\
+&nbsp;&nbsp;&nbsp;&nbsp;[5. Install Wazuh agent](#5-install-wazuh-agent)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.1 Configure Wazuh agent](#51-configure-wazuh-agent)
+
 ## Add the repository
 
 ```bash
@@ -22,7 +38,7 @@ sync-ury = https://github.com....
 * You need root user privileges to install each component
 * Please check the bug section to known known bugs and their workaround
 
-### 1. Install Wazuh Indexer
+### 1. Install Wazuh indexer
 
 Please check [wazuh indexer install page](https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/index.html) for requirements.
 
