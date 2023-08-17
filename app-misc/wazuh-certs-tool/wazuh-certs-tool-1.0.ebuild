@@ -5,7 +5,7 @@ EAPI=8
 
 DESCRIPTION="Wazuh certs tool"
 HOMEPAGE="https://wazuh.com"
-SRC_URI=""
+SRC_URI="https://packages.wazuh.com/4.4/wazuh-certs-tools.sh"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -18,14 +18,8 @@ BDEPEND=""
 S="${WORKDIR}"
 
 src_install(){
-    certs_working_dir="/usr/share/wazuh-certificates"
-    certs_config_file="${certs_working_dir}/config.yml"
-    einfo "Creating working directoy for certificates generation : ${certs_working_dir}"
-    mkdir -p "${certs_working_dir}"
-    cd "${certs_working_dir}"
-
-    einfo "Downloading Wazuh script"
-    curl -sO https://packages.wazuh.com/4.4/wazuh-certs-tool.sh
+    dodir /usr/share/wazuh-certificates
+    cp -L "${DISTDIR}"/wazuh-certificates.sh "${D}/usr/share/wazuh-certificates" || die "Install failed !"
 }
 
 pkg_postinst() {
