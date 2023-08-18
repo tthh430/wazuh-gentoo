@@ -19,7 +19,7 @@ S="${WORKDIR}"
 
 src_install(){
     dodir /usr/share/wazuh-certificates
-    cp -L "${DISTDIR}"/wazuh-certificates.sh "${D}/usr/share/wazuh-certificates" || die "Install failed !"
+    cp -L "${DISTDIR}"/wazuh-certs-tool.sh "${D}/usr/share/wazuh-certificates" || die "Install failed !"
 }
 
 pkg_postinst() {
