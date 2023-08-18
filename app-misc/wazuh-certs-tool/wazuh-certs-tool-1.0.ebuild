@@ -5,7 +5,7 @@ EAPI=8
 
 DESCRIPTION="Wazuh certs tool"
 HOMEPAGE="https://wazuh.com"
-SRC_URI="https://packages.wazuh.com/4.4/wazuh-certs-tools.sh"
+SRC_URI="https://packages.wazuh.com/4.4/wazuh-certs-tool.sh"
 
 LICENSE="GPL-2"
 SLOT="0"
