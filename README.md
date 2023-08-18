@@ -162,3 +162,5 @@ emerge --config "=app-misc/wazuh-agent-<version>"
 # Replace <version> with the wazuh agent version
 ```
 ## Known bugs
+
+### RPMtoTAR bug
