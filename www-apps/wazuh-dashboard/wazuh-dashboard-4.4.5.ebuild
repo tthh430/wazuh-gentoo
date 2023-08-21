@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="sys-libs/libcap
+DEPEND="acct-user/wazuh-dashboard
+acct-group/wazuh-dashboard
+sys-libs/libcap
 app-arch/rpm2targz"
 
 RDEPEND="${DEPEND}"
@@ -46,22 +48,8 @@ pkg_postinst() {
 
 pkg_config() {
 
-	# Create wazuh-dashboard user
+	# wazuh-dashboard user
 	WD_USER="wazuh-dashboard"
-	if [[ $(getent passwd "${WD_USER}" | grep -c "${WD_USER}") -eq 0 ]]; then
-        einfo "${WD_USER} user does not exist"
-        einfo "Creating ${WD_USER} user"
-        useradd -d /dev/null -c "Wazuh Dashboard user" -M -r -U -s /sbin/nologin "${WD_USER}" > /dev/null
-
-        if  [[ $(getent passwd ${WD_USER} | grep -c "${WD_USER}") -eq 1 ]]; then
-            einfo "${WD_USER} user  created"
-        else
-            eerror "Error during ${WD_USER} user creation"
-			exit 1
-        fi
-	else
-		einfo "${WD_USER} user already exist. Skip"
-    fi
 
 	# Configuring Wazuh dashboard
 	read -p "Wazuh dashboard node name or IP : " wazuh_dashboard
