@@ -1,10 +1,10 @@
 # init file : /etc/init.d/filebeat-oss
 
 # Filebeat-OSS user
-FB_USER="filebeat-oss"
+FB_USER="root"
 
 # Filebeat-OSS group
-FB_GROUP="filebeat-oss"
+FB_GROUP="root"
 
 # Filebeat-OSS home
 FB_HOME="/usr/share/filebeat"

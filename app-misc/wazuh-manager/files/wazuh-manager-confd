@@ -1,10 +1,10 @@
 # init file : /etc/init.d/wazuh-indexer
 
 # Wazuh Manager user
-WM_USER="wazuh-manager"
+WM_USER="wazuh"
 
 # Wazuh Manager group
-WM_GROUP="wazuh-manager"
+WM_GROUP="wazuh"
 
 # Wazuh Manager home
 WM_HOME="/var/ossec"

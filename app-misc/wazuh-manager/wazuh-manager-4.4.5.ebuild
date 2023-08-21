@@ -15,7 +15,6 @@ KEYWORDS="~amd64"
 
 DEPEND="acct-user/wazuh
 acct-group/wazuh
-=app-misc/filebeat-oss-7.10.2
 app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
