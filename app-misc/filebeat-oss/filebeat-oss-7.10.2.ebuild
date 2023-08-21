@@ -52,14 +52,16 @@ pkg_config() {
 	#FB_USER="filebeat-oss"
 	FB_USER="root"
 
+	read -p "Wazuh indexer IP or hostname : " wazuh-indexer
+
 	# Write filebeat configuration file
 	filebeat_configuration_path="/etc/filebeat/filebeat.yml"
 
 	echo -e "output.elasticsearch:" > ${filebeat_configuration_path}
 	echo -e "  hosts: [\"${wazuh_indexer}:9200\"]" >> ${filebeat_configuration_path}
 	echo -e "  protocol: https" >> ${filebeat_configuration_path}
-	echo -e "  username: \$\{username\}" >> ${filebeat_configuration_path}
-	echo -e "  password: \$\{password\}" >> ${filebeat_configuration_path}
+	echo -e "  username: \${username}" >> ${filebeat_configuration_path}
+	echo -e "  password: \${password}" >> ${filebeat_configuration_path}
 	echo -e "  ssl.certificate_authorities:" >> ${filebeat_configuration_path}
 	echo -e "    - /etc/filebeat/certs/root-ca.pem" >> ${filebeat_configuration_path}
 	echo -e "  ssl.certificate: \"/etc/filebeat/certs/filebeat.pem\"" >> ${filebeat_configuration_path}
@@ -96,31 +98,31 @@ pkg_config() {
 
     # Change owner of important directories to filebeat-oss user
 	einfo "Set the right owner to the filebeat bin"
-	chown "${FB_USER}:${FB_USER} /usr/bin/filebeat"
+	chown ${FB_USER}:${FB_USER} /usr/bin/filebeat
 
 	einfo "Set the right owner to the filebeat directory config"
-	chown -R "${FB_USER}:${FB_USER} /etc/filebeat"
+	chown -R ${FB_USER}:${FB_USER} /etc/filebeat
 
 	einfo "Set the right owner to the filebeat home directory"
-	chown -R "${FB_USER}:${FB_USER} /usr/share/filebeat"
+	chown -R ${FB_USER}:${FB_USER} /usr/share/filebeat
 
 	einfo "Create a Filebeat keystore to securely store authentication credentials"
-	sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat keystore create
+	/usr/share/filebeat/bin/filebeat keystore create
 
 	einfo "Add the default credentials to the keystore"
 	einfo "\tDefault username : admin"
 	einfo "\tDefault password : admin"
-	echo admin | sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat add username --stdin --force
-	echo admin | sudo -u "${FB_USER}" /usr/share/filebeat/bin/filebeat add password --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat add username --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat add password --stdin --force
 
 	einfo "Download the alerts template for the Wazuh indexer"
 	curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
-	chown -R "${FB_USER}:${FB_USER} /etc/filebeat"
+	chown -R ${FB_USER}:${FB_USER} /etc/filebeat
 	chmod go+r /etc/filebeat/wazuh-template.json
 
 	einfo "Install the Wazuh module for filebeat"
 	curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.2.tar.gz | tar -xvz -C /usr/share/filebeat/module
-	chown -R "${FB_USER}:${FB_USER} /usr/share/filebeat"
+	chown -R ${FB_USER}:${FB_USER} /usr/share/filebeat
 
 	# Deploy certificates
 	einfo "Deploying certificates"
