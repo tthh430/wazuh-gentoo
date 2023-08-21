@@ -5,45 +5,21 @@
 name="wazuh-manager daemon"
 description="Wazuh Manager"
 
-# Set default value if unset
-WM_HOME=${WM_HOME:="/var/ossec"}
-PID_DIR=${PID_DIR:="/run/wazuh-manager"}
-WM_USER=${WM_USER:="wazuh-manager"}
-WM_GROUP=${WM_GROUP:="wazuh-manager"}
-
-pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
-
-command="${WM_HOME}/bin/wazuh-control"
-command_args=""
-#command_args_background="--pidfile=${pidfile}"
-required_files=""
-
 depend() {
 	use net
 }
 
-start_pre() {
-	# Ensure PID_DIR exists
-	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
-		mkdir -p "${PID_DIR}"
-		chown "${WM_USER}:${WM_GROUP} ${PID_DIR}"
-	fi
-
-	# Ensure owner of wazuh manager home directory
-	chown -R "${WM_USER}:${WM_GROUP}" "${WM_HOME}"
-}
-
 start() {
 	ebegin "Starting Wazuh Manager ..."
-	start-stop-daemon --start --background --user "${WM_USER}" --group "${WM_GROUP}" --pidfile "${pidfile}" --exec "${command} start > /dev/null"
+	/var/ossec/bin/wazuh-control start
 }
 
 stop() {
-	ebegin "Stoping Wazuh Manger ..."
-	start-stop-daemon --stop --background --user "${WM_USER}" --group "${WM_GROUP}" --pidfile "${pidfile}" --exec "${command} stop > /dev/null"
+	ebegin "Stopping Wazuh Manager ..."
+	/var/ossec/bin/wazuh-control stop
 }
 
 status() {
 	ebegin "Wazuh Manager status"
-	sudo -u "${WM_USER} ${command} status"
+	/var/ossec/bin/wazuh-control  status
 }
