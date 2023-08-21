@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="=app-misc/filebeat-oss-7.10.2
+DEPEND="acct-user/wazuh
+acct-group/wazuh
+=app-misc/filebeat-oss-7.10.2
 app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
@@ -45,22 +47,8 @@ pkg_postinst() {
 
 pkg_config() {
 
-	# Create wazuh-manager user
-	WM_USER="wazuh-manager"
-	if [[ $(getent passwd "${WM_USER}" | grep -c "${WM_USER}") -eq 0 ]]; then
-        einfo "${WM_USER} user does not exist"
-        einfo "Creating ${WM_USER} user"
-        useradd -d /dev/null -c "Wazuh Manager user" -M -r -U -s /sbin/nologin "${WM_USER}" > /dev/null
-
-        if  [[ $(getent passwd ${WM_USER} | grep -c "${WM_USER}") -eq 1 ]]; then
-            einfo "${WM_USER} user  created"
-        else
-            eerror "Error during ${WM_USER} user creation"
-			exit 1
-        fi
-	else
-		einfo "${WM_USER} user already exist. Skip"
-    fi
+	# wazuh-manager user
+	WM_USER="wazuh"
 
 	# Change owner of important directories to wazuh-manager user
     einfo "Change owner of /usr/share/wazuh-indexer to ${WM_USER}"
