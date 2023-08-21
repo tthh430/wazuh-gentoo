@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="sys-apps/coreutils
+DEPEND="acct-user/wazuh-indexer
+acct-group/wazuh-indexer
+sys-apps/coreutils
 app-arch/rpm2targz
 app-admin/sudo"
 RDEPEND="${DEPEND}"
@@ -53,24 +55,9 @@ pkg_postinst() {
 
 pkg_config() {
 
-    # Create wazuh-indexer user
+    # wazuh-indexer user
     WI_USER="wazuh-indexer"
-    if [[ $(getent passwd "${WI_USER}" | grep -c "${WI_USER}") -eq 0 ]]; then
-        einfo "${WI_USER} user does not exist"
-        einfo "Creating ${WI_USER} user"
-        useradd -d /dev/null -c "Wazuh Indexer user" -M -r -U -s /sbin/nologin "${WI_USER}" > /dev/null
-   
-        if  [[ $(getent passwd "${WI_USER}" | grep -c "${WI_USER}") -eq 1 ]]; then
-            einfo "${WI_USER} user created"
-        else
-            eerror "Error during ${WI_USER} user creation"
-            exit 1
-        fi
-    else
-        einfo "${WI_USER} user already exist. Skip!"
-    fi
-    einfo
-
+    
     # Replace /usr/bin/bash by /bin/bash in all files in /usr/share/wazuh-indexer/bin
     einfo "Replace /usr/bin/bash by /bin/bash in all files in /usr/share/wazuh-indexer/bin"
     einfo
