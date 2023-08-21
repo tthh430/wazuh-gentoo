@@ -29,6 +29,8 @@ src_install(){
 	cp -pPR "${S}"/etc "${D}"/ || die "Failed to copy files"
 	cp -pPR "${S}"/usr "${D}"/ || die "Failed to copy files"
 
+	keepdir /var/lib/filebeat
+
 	newinitd "${FILESDIR}"/filebeat-oss-initd filebeat-oss
 	newconfd "${FILESDIR}"/filebeat-oss-confd filebeat-oss
 }
