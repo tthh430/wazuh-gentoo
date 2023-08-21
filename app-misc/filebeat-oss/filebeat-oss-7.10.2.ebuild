@@ -52,7 +52,7 @@ pkg_config() {
 	#FB_USER="filebeat-oss"
 	FB_USER="root"
 
-	read -p "Wazuh indexer IP or hostname : " wazuh-indexer
+	read -p "Wazuh indexer IP or hostname : " wazuh_indexer
 
 	# Write filebeat configuration file
 	filebeat_configuration_path="/etc/filebeat/filebeat.yml"
@@ -107,13 +107,13 @@ pkg_config() {
 	chown -R ${FB_USER}:${FB_USER} /usr/share/filebeat
 
 	einfo "Create a Filebeat keystore to securely store authentication credentials"
-	/usr/share/filebeat/bin/filebeat keystore create
+	/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore create
 
 	einfo "Add the default credentials to the keystore"
 	einfo "\tDefault username : admin"
 	einfo "\tDefault password : admin"
-	echo admin | /usr/share/filebeat/bin/filebeat add username --stdin --force
-	echo admin | /usr/share/filebeat/bin/filebeat add password --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore add username --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore add password --stdin --force
 
 	einfo "Download the alerts template for the Wazuh indexer"
 	curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
@@ -176,6 +176,6 @@ pkg_config() {
 
 	# Test installation
 	einfo "To test the installation run the following command :"
-	einfo "sudo -u ${FB_USER} /usr/share/filebeat/bin/filebeat test config"
-	einfo "sudo -u ${FB_USER} /usr/share/filebeat/bin/filebeat test output"
+	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test config"
+	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test output"
 }
