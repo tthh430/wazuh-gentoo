@@ -11,8 +11,8 @@ FB_CONFIG_DIR=${FB_CONFIG_DIR:="/etc/filebeat"}
 FB_DATA_DIR=${FB_DATA_DIR:="/var/lib/filebeat"}
 FB_LOGS_DIR=${FB_LOGS_PATH:="/var/log/filebeat"}
 PID_DIR=${PID_DIR:="/run/filebeat-oss"}
-FB_USER=${FB_USER:="filebeat-oss"}
-FB_GROUP=${FB_GROUP:="filebeat-oss"}
+FB_USER=${FB_USER:="root"}
+FB_GROUP=${FB_GROUP:="root"}
 
 pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
 

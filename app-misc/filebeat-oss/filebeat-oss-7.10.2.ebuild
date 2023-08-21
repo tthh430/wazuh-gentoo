@@ -49,28 +49,8 @@ pkg_postinst() {
 pkg_config() {
 
 	# Create filebeat-oss user
-	FB_USER="filebeat-oss"
-	if [[ $(getent passwd "${FB_USER}" | grep -c "${FB_USER}") -eq 0 ]]; then
-        einfo "${FB_USER} user does not exist"
-        einfo "Creating ${FB_USER} user"
-        useradd -d /dev/null -c "Filebeat-oss user" -M -r -U -s /sbin/nologin "${FB_USER}" > /dev/null
-
-        if  [[ $(getent passwd ${FB_USER} | grep -c "${FB_USER}") -eq 1 ]]; then
-            einfo "${FB_USER} user created"
-        else
-            eerror "Error during ${FB_USER} user creation"
-        fi
-	else
-		einfo "${FB_USER} user already exist. Skip"
-    fi
-
-	# Configuring Filebeat
-	read -p "Wazuh indexer node name or IP : " wazuh_indexer
-
-	if [[ -z "${wazuh_indexer}" ]]; then 
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+	#FB_USER="filebeat-oss"
+	FB_USER="root"
 
 	# Write filebeat configuration file
 	filebeat_configuration_path="/etc/filebeat/filebeat.yml"
