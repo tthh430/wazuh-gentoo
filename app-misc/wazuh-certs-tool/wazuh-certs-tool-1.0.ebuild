@@ -9,7 +9,7 @@ SRC_URI="https://packages.wazuh.com/4.4/wazuh-certs-tool.sh"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 DEPEND=""
 RDEPEND="${DEPEND}"
