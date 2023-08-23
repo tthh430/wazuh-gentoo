@@ -82,6 +82,38 @@ pkg_config() {
 	# wazuh-manager user
 	WM_USER="wazuh"
 
+	# Generate sslmanager cert
+	read -p "Wazuh manager IP : " wazuh_manager_ip
+
+	[[ ! -z "${wazuh_manager_ip}" ]] || die "Empty value not allowed !"
+
+	read -p "Wazuh manager hostname : " wazuh_manager_hostname
+
+	[[ ! -z "${wazuh_manager_hostname}" ]] || die "Empty value not allowed !"
+
+	mkdir -p /var/ossec/certs
+	cd /var/ossec/certs
+
+	openssl req -x509 -new -nodes -newkey rsa:4096 -keyout rootCA.key -out rootCA.pem -batch -subj "/C=US/ST=CA/O=Wazuh"
+
+	echo -e "[req]" > /var/ossec/certs/req.conf
+    echo -e "distinguished_name = req_distinguished_name" >> /var/ossec/certs/req.conf
+    echo -e "req_extensions = req_ext" >> /var/ossec/certs/req.conf
+    echo -e "prompt = no" >> /var/ossec/certs/req.conf
+    echo -e "[req_distinguished_name]" >> /var/ossec/certs/req.conf
+    echo -e "C = US" >> /var/ossec/certs/req.conf
+    echo -e "CN = ${wazuh_manager_ip}" >> /var/ossec/certs/req.conf
+    echo -e "[req_ext]" >> /var/ossec/certs/req.conf
+    echo -e "subjectAltName = @alt_names" >> /var/ossec/certs/req.conf
+    echo -e "[alt_names]" >> /var/ossec/certs/req.conf
+    echo -e "DNS.1 = ${wazuh_manager_hostname}" >> /var/ossec/certs/req.conf
+
+	openssl req -new -nodes -newkey rsa:4096 -keyout sslmanager.key -out sslmanager.csr -config req.conf
+
+	openssl x509 -req -days 365 -in sslmanager.csr -CA rootCA.pem -CAkey rootCA.key -out sslmanager.cert -CAcreateserial -extfile req.conf -extensions req_ext
+
+	cp sslmanager.cert sslmanager.key /var/ossec/etc
+
 	# Change owner of important directories to wazuh-manager user
     einfo "Change owner of /usr/share/wazuh-indexer to ${WM_USER}"
     chown -R "${WM_USER}":"${WM_USER}" /var/ossec
@@ -94,7 +126,7 @@ pkg_config() {
 
     read -p "Would you like to start wazuh-manager service at boot ? [y/n] " start_at_boot
 
-    [[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
+    [[ ! -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-manager
