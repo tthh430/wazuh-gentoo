@@ -142,14 +142,14 @@ pkg_config() {
 	einfo "Node name must match name in certificates"
 	read -p "Node name : " node_name
 
-	[[ -z ${node_name} ]] || die "Empty value not allowed !"
+	[[ ! -z ${node_name} ]] || die "Empty value not allowed !"
 
 	read -p "Certificates tar file path on node : " certificates_path
 
-	[[ -z ${certificates_path} ]] || die "Empty value not allowed !"
+	[[ ! -z ${certificates_path} ]] || die "Empty value not allowed !"
 
 
-	[[ ! -s "${certificates_path}" ]] || die "Empty value not allowed !"
+	[[ -s "${certificates_path}" ]] || die "Empty value not allowed !"
 
 	export NODE_NAME="${node_name}"
     mkdir -p /etc/filebeat/certs
@@ -168,7 +168,7 @@ pkg_config() {
 
 	read -p "Would you like to start Filebeat service at boot ? [y/n] " start_at_boot
 	
-	[[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
+	[[ ! -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add filebeat-oss
