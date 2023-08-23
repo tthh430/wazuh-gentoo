@@ -78,24 +78,15 @@ pkg_config() {
     read -p "Publish address : " network_host
     einfo
 
-    if [[ -z "${network_host}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+    [[ -z "${network_host}" ]] || die "Empty value not allowed !"
 
     read -p "Indexer name (must bind name in certs) : " indexer_name
 
-    if [[ -z "${indexer_name}" ]]; then
-        eeror "Empty velue not allowed"
-        exit 1 
-    fi
+    [[ -z "${indexer_name}" ]] || die "Empty value not allowed !"
 
     read -p "Cluster name : " cluster_name
 
-     if [[ -z "${cluster_name}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+    [[ -z "${cluster_name}" ]] || die "Empty value not allowed !"
 
     # Write indexer configuration
     echo -e "network.host: \"${network_host}\"" > ${wazuh_indexer_config_file}
@@ -131,15 +122,9 @@ pkg_config() {
 
     read -p "Certificates tar file path on node : " certificates_path
 
-	if [[ -z ${certificates_path} ]]; then
-        eerror "Empty value not allowed !"
-		exit 1
-	fi
+	[[ -z ${certificates_path} ]] || die "Empty value not allowed !"
 
-	if [[ ! -s "${certificates_path}" ]]; then
-		eerror "${certificates_path} does not exist or is empty"
-		exit 1
-	fi 
+	[[ ! -s "${certificates_path}" ]] || die "${certificates_path} does not exist or is empty"
 
     einfo "Deploying certificates"
     einfo
@@ -170,10 +155,7 @@ pkg_config() {
 
     read -p "Would you like to start wazuh-indexer service at boot ? [y/n] " start_at_boot
 
-    if [[ -z "${start_at_boot}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+    [[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-indexer
