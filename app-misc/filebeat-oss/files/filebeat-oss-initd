@@ -18,7 +18,7 @@ pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
 
 command="${FB_HOME}/bin/filebeat"
 command_args="-c ${FB_CONFIG_DIR}/filebeat.yml --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR}"
-command_test_args="-e test config --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR} --path.config ${FB_CONFIG_DIR}"
+command_test_args="-c ${FB_CONFIG_DIR}/filebeat.yml -e test config --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR} --path.config ${FB_CONFIG_DIR}"
 #command_args_background="--pidfile=${pidfile}"
 required_files=""
 
