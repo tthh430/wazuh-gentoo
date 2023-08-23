@@ -14,8 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 DEPEND="=app-misc/wazuh-manager-4.4.5
-app-arch/rpm2targz
-app-admin/sudo"
+app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
@@ -30,6 +29,7 @@ src_install(){
 	cp -pPR "${S}"/usr "${D}"/ || die "Failed to copy files"
 
 	keepdir /var/lib/filebeat
+	keepdir /var/log/filebeat
 
 	newinitd "${FILESDIR}"/filebeat-oss-initd filebeat-oss
 	newconfd "${FILESDIR}"/filebeat-oss-confd filebeat-oss
@@ -108,6 +108,12 @@ pkg_config() {
 	einfo "Set the right owner to the filebeat home directory"
 	chown -R ${FB_USER}:${FB_USER} /usr/share/filebeat
 
+	einfo "Set the right owner to the filebeat data directory"
+	chown -R ${FB_USER}:${FB_USER} /var/lib/filebeat
+
+	einfo "Set the right owner to the filebeat logs directory"
+	chown -R ${FB_USER}:${FB_USER} /var/log/filebeat
+
 	einfo "Create a Filebeat keystore to securely store authentication credentials"
 	/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore create
 
@@ -157,7 +163,7 @@ pkg_config() {
 	mv -n /etc/filebeat/certs/${NODE_NAME}-key.pem /etc/filebeat/certs/filebeat-key.pem
 	chmod 500 /etc/filebeat/certs
 	chmod 400 /etc/filebeat/certs/*
-	chown -R "${FB_USER}":"${FB_USER}" /etc/filebeat/certs
+	chown -R ${FB_USER}:${FB_USER} /etc/filebeat/certs
 
 	# Start Filebeat service
 	einfo
