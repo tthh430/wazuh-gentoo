@@ -54,17 +54,11 @@ pkg_config() {
 	# Configuring Wazuh dashboard
 	read -p "Wazuh dashboard node name or IP : " wazuh_dashboard
 
-	if [[ -z "${wazuh_dashboard}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-	fi
+	[[ -z "${wazuh_dashboard}" ]] || die "Empty value not allowed !"
 
 	read -p "Wazuh indexer node name or IP : " wazuh_indexer
 
-	if [[ -z "${wazuh_indexer}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-	fi
+	[[ -z "${wazuh_indexer}" ]] || die "Empty value not allowed !"
 
 	# Write Wazuh dashboard configuration file
 	wazuh_dashboard_configuration_path="/etc/wazuh-dashboard/opensearch_dashboards.yml"
@@ -90,22 +84,13 @@ pkg_config() {
 
 	read -p "Node name : " node_name
 
-	if [[ -z "${node_name}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-	fi
+	[[ -z "${node_name}" ]] || die "Empty value not allowed !"
 	
 	read -p "Certificates tar file path on node : " certificates_path
 
-	if [[ -z ${certificates_path} ]]; then
-        eerror "Empty value not allowed !"
-		exit 1
-	fi
+	[[ -z ${certificates_path} ]] || die "Empty value not allowed !" 
 
-	if [[ ! -s "${certificates_path}" ]]; then
-		eerror "${certificates_path} does not exist or is empty"
-		exit 1
-	fi 
+	[[ ! -s "${certificates_path}" ]] || die "Empty value not allowed !"
 
 	export NODE_NAME="${node_name}"
 	mkdir /etc/wazuh-dashboard/certs
@@ -131,10 +116,7 @@ pkg_config() {
 
 	read -p "Would you like to start Wazuh dashboard service at boot ? [y/n] " start_at_boot
 	
-	if [[ -z "${start_at_boot}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+	[[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-dashboard
@@ -149,14 +131,4 @@ pkg_config() {
 	einfo
 	einfo "Don't forget to secure your installation"
 	einfo "PLease refer to wazuh official documentation to do it"
-
-
-
-
-	#read -p "Which installation mode is used ? [standalone/distributed] " install_mode
-#
-	#if [[ -z "${install_mode}" ]]; then
-    #    eerror "Empty value not allowed !"
-    #    exit 1
-	#fi	
 }
