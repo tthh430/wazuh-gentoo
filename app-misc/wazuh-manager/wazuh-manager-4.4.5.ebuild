@@ -94,10 +94,7 @@ pkg_config() {
 
     read -p "Would you like to start wazuh-manager service at boot ? [y/n] " start_at_boot
 
-    if [[ -z "${start_at_boot}" ]]; then
-        eerror "Empty value not allowed !"
-        exit 1
-    fi 
+    [[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-manager
