@@ -11,7 +11,7 @@ SRC_URI="https://packages.wazuh.com/4.x/yum/${P}-1.x86_64.rpm"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 DEPEND="acct-user/wazuh
 acct-group/wazuh

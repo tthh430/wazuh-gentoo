@@ -8,7 +8,7 @@ HOMEPAGE="https://wazuh.com"
 
 LICENSE="metapackage"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 DEPEND="=app-misc/wazuh-manager-${PV}
 =app-misc/filebeat-oss-7.10.2"
