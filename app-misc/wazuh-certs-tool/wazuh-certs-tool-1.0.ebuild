@@ -113,7 +113,7 @@ pkg_config() {
 	    exit 1
 	fi 
 
-    einfo "Wazuh certs are in ${certs_working_dir}/wazuh-certificiates.tar"
+    einfo "Wazuh certs are in ${certs_working_dir}/wazuh-certificates.tar"
     einfo "Copy the wazuh-certificates.tar file to all nodes if you use distributed deployment"
     einfo "Use the same directory (${certs_working_dir}) and the tar file name in all nodes to deploy automatically certificates"
 }
