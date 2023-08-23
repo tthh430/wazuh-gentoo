@@ -33,6 +33,11 @@ src_install(){
 
 	newinitd "${FILESDIR}"/filebeat-oss-initd filebeat-oss
 	newconfd "${FILESDIR}"/filebeat-oss-confd filebeat-oss
+
+	curl -so "${D}"/etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
+	curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.2.tar.gz | tar -xvz -C "${D}"/usr/share/filebeat/module
+
+
 }
 
 pkg_postinst() {
@@ -115,21 +120,19 @@ pkg_config() {
 	chown -R ${FB_USER}:${FB_USER} /var/log/filebeat
 
 	einfo "Create a Filebeat keystore to securely store authentication credentials"
-	/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore create
+	/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore --path.config /etc/filebeat --path.home /usr/share/filebeat --path.data /var/lib/filebeat --path.logs /var/log/filebeat create
 
 	einfo "Add the default credentials to the keystore"
 	einfo "\tDefault username : admin"
 	einfo "\tDefault password : admin"
-	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore add username --stdin --force
-	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore add password --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore --path.config /etc/filebeat --path.home /usr/share/filebeat --path.data /var/lib/filebeat --path.logs /var/log/filebeat add username --stdin --force
+	echo admin | /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml keystore --path.config /etc/filebeat --path.home /usr/share/filebeat --path.data /var/lib/filebeat --path.logs /var/log/filebeat add password --stdin --force
 
 	einfo "Download the alerts template for the Wazuh indexer"
-	curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
 	chown -R ${FB_USER}:${FB_USER} /etc/filebeat
 	chmod go+r /etc/filebeat/wazuh-template.json
 
 	einfo "Install the Wazuh module for filebeat"
-	curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.2.tar.gz | tar -xvz -C /usr/share/filebeat/module
 	chown -R ${FB_USER}:${FB_USER} /usr/share/filebeat
 
 	# Deploy certificates
