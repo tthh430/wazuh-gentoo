@@ -44,7 +44,6 @@ Please check [wazuh indexer install page](https://documentation.wazuh.com/curren
 
 ```bash
 # To install wazuh indexer
-echo "app-misc/wazuh-indexer ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
 emerge -v app-misc/wazuh-indexer
 ```
 
@@ -75,9 +74,6 @@ The Wazuh server is composed of the Wazuh manager and Filebeat.
 
 ```bash 
 # To install wazuh server
-echo "app-misc/wazuh-server ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
-echo "app-misc/wazuh-manager ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
-echo "app-misc/filebeat-oss ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
 emerge -v app-misc/wazuh-server
 # It will install wazuh manager and filebeat
 ```
@@ -121,7 +117,6 @@ Please check [wazuh dashboard install page](https://documentation.wazuh.com/curr
 
 ```bash 
 # To install wazuh dashboard
-echo "www-apps/wazuh-dashboard ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
 emerge -v www-apps/wazuh-dashboard
 ```
 
@@ -156,7 +151,6 @@ WAZUH_MANAGER="<wazuh-manager-ip>" emerge -v app-misc/wazuh-agent
 
 ```bash
 # Configure Wazuh Agent
-echo "app-misc/wazuh-agent ~amd64" >> /etc/portage/package.accept_keywords/wazuh-gentoo
 emerge --config "=app-misc/wazuh-agent-<version>"
 # Replace <version> with the wazuh agent version
 ```
