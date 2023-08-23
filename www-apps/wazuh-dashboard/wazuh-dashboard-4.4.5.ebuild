@@ -53,11 +53,11 @@ pkg_config() {
 	# Configuring Wazuh dashboard
 	read -p "Wazuh dashboard node name or IP : " wazuh_dashboard
 
-	[[ -z "${wazuh_dashboard}" ]] || die "Empty value not allowed !"
+	[[ ! -z "${wazuh_dashboard}" ]] || die "Empty value not allowed !"
 
 	read -p "Wazuh indexer node name or IP : " wazuh_indexer
 
-	[[ -z "${wazuh_indexer}" ]] || die "Empty value not allowed !"
+	[[ ! -z "${wazuh_indexer}" ]] || die "Empty value not allowed !"
 
 	# Write Wazuh dashboard configuration file
 	wazuh_dashboard_configuration_path="/etc/wazuh-dashboard/opensearch_dashboards.yml"
@@ -83,13 +83,13 @@ pkg_config() {
 
 	read -p "Node name : " node_name
 
-	[[ -z "${node_name}" ]] || die "Empty value not allowed !"
+	[[ ! -z "${node_name}" ]] || die "Empty value not allowed !"
 	
 	read -p "Certificates tar file path on node : " certificates_path
 
-	[[ -z ${certificates_path} ]] || die "Empty value not allowed !" 
+	[[ ! -z ${certificates_path} ]] || die "Empty value not allowed !" 
 
-	[[ ! -s "${certificates_path}" ]] || die "Empty value not allowed !"
+	[[ -s "${certificates_path}" ]] || die "Empty value not allowed !"
 
 	export NODE_NAME="${node_name}"
 	mkdir /etc/wazuh-dashboard/certs
@@ -115,7 +115,7 @@ pkg_config() {
 
 	read -p "Would you like to start Wazuh dashboard service at boot ? [y/n] " start_at_boot
 	
-	[[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
+	[[ ! -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-dashboard
