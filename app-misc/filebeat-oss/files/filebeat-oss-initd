@@ -17,7 +17,7 @@ FB_GROUP=${FB_GROUP:="root"}
 pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
 
 command="${FB_HOME}/bin/filebeat"
-command_args="-c ${FB_CONFIG_DIR}/filebeat.yml --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR}"
+command_args="-c ${FB_CONFIG_DIR}/filebeat.yml --path.config ${FB_CONFIG_DIR} --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR}"
 command_test_args="-c ${FB_CONFIG_DIR}/filebeat.yml -e test config --path.home ${FB_HOME} --path.data ${FB_DATA_DIR} --path.logs ${FB_LOGS_DIR} --path.config ${FB_CONFIG_DIR}"
 #command_args_background="--pidfile=${pidfile}"
 required_files=""
@@ -56,12 +56,12 @@ start() {
 	if [[ $? -ne 0 ]]; then
 		eerror "Filebeat-OSS test failed"
 	fi
-	start-stop-daemon --start --background --user "${FB_USER}" --group "${FB_GROUP}" --pidfile "${pidfile}" --exec ${command} ${command_args}
+	start-stop-daemon --start --background --user ${FB_USER} --group ${FB_GROUP} --pidfile ${pidfile} --exec ${command} -- ${command_args}
 }
 
 stop() {
 	ebegin "Stoping Wazuh Manger ..."
-	start-stop-daemon --stop --background --user "${WM_USER}" --group "${WM_GROUP}" --pidfile "${pidfile}"
+	start-stop-daemon --stop --user ${FB_USER} --group ${FB_GROUP} --pidfile ${pidfile}
 }
 
 restart() {
