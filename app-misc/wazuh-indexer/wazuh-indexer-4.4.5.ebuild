@@ -78,15 +78,15 @@ pkg_config() {
     read -p "Publish address : " network_host
     einfo
 
-    [[ -z "${network_host}" ]] || die "Empty value not allowed !"
+    [[ ! -z "${network_host}" ]] || die "Empty value not allowed !"
 
     read -p "Indexer name (must bind name in certs) : " indexer_name
 
-    [[ -z "${indexer_name}" ]] || die "Empty value not allowed !"
+    [[ ! -z "${indexer_name}" ]] || die "Empty value not allowed !"
 
     read -p "Cluster name : " cluster_name
 
-    [[ -z "${cluster_name}" ]] || die "Empty value not allowed !"
+    [[ ! -z "${cluster_name}" ]] || die "Empty value not allowed !"
 
     # Write indexer configuration
     echo -e "network.host: \"${network_host}\"" > ${wazuh_indexer_config_file}
@@ -122,7 +122,7 @@ pkg_config() {
 
     read -p "Certificates tar file path on node : " certificates_path
 
-	[[ -z ${certificates_path} ]] || die "Empty value not allowed !"
+	[[ ! -z ${certificates_path} ]] || die "Empty value not allowed !"
 
 	[[ ! -s "${certificates_path}" ]] || die "${certificates_path} does not exist or is empty"
 
@@ -139,13 +139,13 @@ pkg_config() {
 
     # Change owner of important directories to wazuh-indexer user
     einfo "Change owner of /usr/share/wazuh-indexer to ${WI_USER}"
-    chown -R "${WI_USER}":"${WI_USER}" /usr/share/wazuh-indexer
+    chown -R ${WI_USER}:${WI_USER} /usr/share/wazuh-indexer
 
     einfo "Change owner of /etc/wazuh-indexer to ${WI_USER}"
-    chown -R "${WI_USER}":"${WI_USER}" /etc/wazuh-indexer
+    chown -R ${WI_USER}:${WI_USER} /etc/wazuh-indexer
 
     einfo "Change owner of /var/log/wazuh-indexer to ${WI_USER}"
-    chown -R "${WI_USER}":"${WI_USER}" /var/log/wazuh-indexer
+    chown -R ${WI_USER}:${WI_USER} /var/log/wazuh-indexer
 
     # Start wazuh-indexer service
     einfo
@@ -155,7 +155,7 @@ pkg_config() {
 
     read -p "Would you like to start wazuh-indexer service at boot ? [y/n] " start_at_boot
 
-    [[ -z "${start_at_boot}" ]] || die "Empty value not allowed !"
+    [[ ! -z "${start_at_boot}" ]] || die "Empty value not allowed !"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-indexer
