@@ -56,19 +56,19 @@ start_pre() {
 	# Ensure PID_DIR exists
 	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
 		mkdir -p "${PID_DIR}"
-		chown "${WI_USER}:${WI_GROUP} ${PID_DIR}"
+		chown ${WI_USER}:${WI_GROUP} ${PID_DIR}
 	fi
 
 	# Ensure owner of log directory
-	chown -R "${WI_USER}:${WI_GROUP}" /var/log/wazuh-indexer
+	chown -R ${WI_USER}:${WI_GROUP} /var/log/wazuh-indexer
 
 	# Ensure owner of config directory
-	chown -R "${WI_USER}:${WI_GROUP}" "${OPENSEARCH_PATH_CONF}"
+	chown -R ${WI_USER}:${WI_GROUP} ${OPENSEARCH_PATH_CONF}
 
 	# Ensure owner of lib directory 
-	chown -R "${WI_USER}:${WI_GROUP}" /var/lib/wazuh-indexer
+	chown -R ${WI_USER}:${WI_GROUP} /var/lib/wazuh-indexer
 
 	# Ensure owner of opensearch home directory
-	chown -R "${WI_USER}:${WI_GROUP}" "${OPENSEARCH_HOME}"
+	chown -R ${WI_USER}:${WI_GROUP} ${OPENSEARCH_HOME}
 }
 
