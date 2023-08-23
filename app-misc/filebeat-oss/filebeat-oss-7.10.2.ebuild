@@ -34,7 +34,7 @@ src_install(){
 	newinitd "${FILESDIR}"/filebeat-oss-initd filebeat-oss
 	newconfd "${FILESDIR}"/filebeat-oss-confd filebeat-oss
 
-	curl -so "${D}"/etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x.wazuh-template.json
+	curl -so "${D}"/etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/4.4/extensions/elasticsearch/7.x/wazuh-template.json
 	curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.2.tar.gz | tar -xvz -C "${D}"/usr/share/filebeat/module
 
 
@@ -187,6 +187,6 @@ pkg_config() {
 
 	# Test installation
 	einfo "To test the installation run the following command :"
-	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test config"
-	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test output"
+	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test --path.config /etc/filebeat --path.home /usr/share/filebeat --path.data /var/lib/filebeat --path.logs /var/log/filebeat config"
+	einfo "/usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml test --path.config /etc/filebeat --path.home /usr/share/filebeat --path.data /var/lib/filebeat --path.logs /var/log/filebeat output"
 }
