@@ -124,7 +124,7 @@ pkg_config() {
 
 	[[ ! -z ${certificates_path} ]] || die "Empty value not allowed !"
 
-	[[ ! -s "${certificates_path}" ]] || die "${certificates_path} does not exist or is empty"
+	[[ -s "${certificates_path}" ]] || die "${certificates_path} does not exist or is empty"
 
     einfo "Deploying certificates"
     einfo
