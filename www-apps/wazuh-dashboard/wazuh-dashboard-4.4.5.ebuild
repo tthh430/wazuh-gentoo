@@ -21,8 +21,7 @@ app-arch/rpm2targz"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
-QA_PREBUILT="usr/share/wazuh-dashboard/*
-usr/*"
+QA_PREBUILT="usr/share/wazuh-dashboard/*"
 
 S="${WORKDIR}"
 
@@ -99,14 +98,14 @@ pkg_config() {
 	mv -n /etc/wazuh-dashboard/certs/${NODE_NAME}-key.pem /etc/wazuh-dashboard/certs/dashboard-key.pem
 	chmod 500 /etc/wazuh-dashboard/certs
 	chmod 400 /etc/wazuh-dashboard/certs/*
-	chown -R "${WD_USER}":"${WD_USER}" /etc/wazuh-dashboard/certs
+	chown -R ${WD_USER}:${WD_USER} /etc/wazuh-dashboard/certs
 
 	# Change owner of important directories to wazuh dashboard user
 	einfo "Set the right owner to the wazuh dashboard home directory"
-	chown -R "${WD_USER}":"${WD_USER}" /usr/share/wazuh-dashboard
+	chown -R ${WD_USER}:${WD_USER} /usr/share/wazuh-dashboard
 
 	einfo "Set the right owner to the wazuh config directory"
-	chown -R "${WD_USER}":"${WD_USER}" /etc/wazuh-dashboard
+	chown -R ${WD_USER}:${WD_USER} /etc/wazuh-dashboard
 
 	# Start wazuh dashboard service
 	einfo

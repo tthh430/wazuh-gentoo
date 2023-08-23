@@ -26,13 +26,13 @@ depend() {
 start_pre() {
 	# Ensure PID_DIR exists
 	if [[ -n "${PID_DIR}" ]] && [[ ! -e "${PID_DIR}" ]]; then 
-		mkdir -p "${PID_DIR}"
-		chown "${WI_USER}:${WI_GROUP} ${PID_DIR}"
+		mkdir -p ${PID_DIR}
+		chown ${WI_USER}:${WI_GROUP} ${PID_DIR}
 	fi
 
 	# Ensure owner of wazuh dashboard home directory
-	chown -R "${WD_USER}:${WD_GROUP}" "${WD_HOME}"
+	chown -R ${WD_USER}:${WD_GROUP} ${WD_HOME}
 
 	# Ensure owner of wazuh dashboard config directory
-	chown -R "${WD_USER}:${WD_GROUP}" "${WD_CONFIG_DIR}"
+	chown -R ${WD_USER}:${WD_GROUP} ${WD_CONFIG_DIR}
 }
