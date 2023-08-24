@@ -66,8 +66,8 @@ pkg_config() {
 	echo -e "server.port: 443" >> ${wazuh_dashboard_configuration_path}
 	echo -e "opensearch.hosts: https://${wazuh_indexer}:9200" >> ${wazuh_dashboard_configuration_path}
 	echo -e "opensearch.ssl.verificationMode: certificate" >> ${wazuh_dashboard_configuration_path}
-	echo -e "#opensearch.username:" >> ${wazuh_dashboard_configuration_path}
-	echo -e "#opensearch.password:" >> ${wazuh_dashboard_configuration_path}
+	echo -e "#opensearch.username: kibanaserver" >> ${wazuh_dashboard_configuration_path}
+	echo -e "#opensearch.password: kibanaserver" >> ${wazuh_dashboard_configuration_path}
 	echo -e "opensearch.requestHeadersAllowlist: [\"securitytenant\",\"Authorization\"]" >> ${wazuh_dashboard_configuration_path}
 	echo -e "opensearch_security.multitenancy.enabled: false" >> ${wazuh_dashboard_configuration_path}
 	echo -e "opensearch_security.readonly_mode.roles: [\"kibana_read_only\"]" >> ${wazuh_dashboard_configuration_path}
