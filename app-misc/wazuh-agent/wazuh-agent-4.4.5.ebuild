@@ -13,7 +13,9 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="amd64"
 
-DEPEND="app-arch/rpm2targz"
+DEPEND="app-arch/rpm2targz
+acct-user/wazuh
+acct-group/wazuh"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
@@ -25,6 +27,39 @@ etc/rc.d/init.d/wazuh-agent"
 
 src_install(){
 	cp -pPR "${S}"/var "${D}"/ || die "Failed to copy files"
+
+	keepdir /var/ossec/var/run
+	keepdir /var/ossec/logs/alerts
+	keepdir /var/ossec/logs/api
+	keepdir /var/ossec/logs/archives
+	keepdir /var/ossec/logs/cluster
+	keepdir /var/ossec/logs/firewall
+	keepdir /var/ossec/logs/wazuh
+	keepdir /var/ossec/ruleset/sca
+	keepdir /var/ossec/api/configuration/ssl
+	keepdir /var/ossec/api/configuration/security
+	keepdir /var/ossec/queue/agentless
+	keepdir /var/ossec/queue/alerts	
+	keepdir /var/ossec/queue/cluster
+	keepdir /var/ossec/queue/db
+	keepdir /var/ossec/queue/diff
+	keepdir /var/ossec/queue/fim/db
+	keepdir /var/ossec/queue/fts
+	keepdir /var/ossec/queue/logcollector
+	keepdir /var/ossec/queue/rids
+	keepdir /var/ossec/queue/sockets
+	keepdir /var/ossec/queue/syslogcollector/db
+	keepdir /var/ossec/queue/tasks
+	keepdir /var/ossec/queue/vulnerabilities
+	keepdir /var/ossec/backup/db
+	keepdir /var/ossec/backup/agents
+	keepdir /var/ossec/backup/shared
+	keepdir /var/ossec/stats
+	keepdir /var/ossec/tmp
+	keepdir /var/ossec/var/download
+	keepdir /var/ossec/var/multigroups
+	keepdir /var/ossec/var/upgrades
+	keepdir /var/ossec/var/wodles
 
 	newinitd "${FILESDIR}"/wazuh-agent-initd wazuh-agent
 	newconfd "${FILESDIR}"/wazuh-agent-confd wazuh-agent
@@ -45,21 +80,14 @@ pkg_postinst() {
 pkg_config() {
 
 	# Create wazuh-agent user
-	WA_USER="wazuh-agent"
-	if [[ $(getent passwd "${WA_USER}" | grep -c "${WA_USER}") -eq 0 ]]; then
-        einfo "${WA_USER} user does not exist"
-        einfo "Creating ${WA_USER} user"
-        useradd -d /dev/null -c "Wazuh Agent user" -M -r -U -s /sbin/nologin "${WA_USER}" > /dev/null
-
-        [[ $(getent passwd ${WA_USER} | grep -c "${WA_USER}") -eq 1 ]] || die "Failed to create ${WA_USER}"
-
-	else
-		einfo "${WA_USER} user already exist. Skip"
-    fi
+	WA_USER="wazuh"
 
 	# Change owner of important directories to wazuh-agent user
     einfo "Change owner of /var/ossec to ${WA_USER}"
-    chown -R "${WA_USER}":"${WA_USER}" /var/ossec
+    chown -R ${WA_USER}:${WA_USER} /var/ossec
+
+	read -p "Wazuh manager IP : " wazuh_manager_ip
+	sed -i "s|MANAGER_IP|${wazuh_manager_ip}|g" /var/ossec/etc/ossec.conf
 
 	# Start wazuh-agent service
     einfo
@@ -69,7 +97,7 @@ pkg_config() {
 
     read -p "Would you like to start wazuh-agent service at boot ? [y/n] " start_at_boot
 
-    [[ -z "${start_at_boot}" ]] || die "Empty value not allowed"
+    [[ ! -z "${start_at_boot}" ]] || die "Empty value not allowed"
 
     if [[ "${start_at_boot}" == "y" ]]; then
         rc-update add wazuh-agent

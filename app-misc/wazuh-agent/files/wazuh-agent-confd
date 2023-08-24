@@ -1,10 +1,10 @@
 # init file : /etc/init.d/wazuh-agent
 
 # Wazuh agent user
-WA_USER="wazuh-agent"
+WA_USER="root"
 
 # Wazuh agent group
-WA_GROUP="wazuh-agent"
+WA_GROUP="root"
 
 # Wazuh Agent home
 WA_HOME="/var/ossec"
