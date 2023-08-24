@@ -117,6 +117,10 @@ pkg_config() {
     echo -e "plugins.security.restapi.roles_enabled:" >> ${wazuh_indexer_config_file}
     echo -e "- \"all_access\"" >> ${wazuh_indexer_config_file}
     echo -e "- \"security_rest_api_access\"" >> ${wazuh_indexer_config_file}
+    echo -e "plugins.security.system_indices.enabled: true" >> ${wazuh_indexer_config_file}
+    echo -e 'plugins.security.system_indices.indices: [".plugins-ml-model", ".plugins-ml-task", ".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opensearch-notifications-*", ".opensearch-notebooks", ".opensearch-observability", ".opendistro-asynchronous-search-response*", ".replication-metadata-store"]' >> ${wazuh_indexer_config_file}
+    echo -e '### Option to allow Filebeat-oss 7.10.2 to work ###' >> ${wazuh_indexer_config_file}
+    echo -e "compatibility.override_main_response_version: true" >> ${wazuh_indexer_config_file}
 
     # Deploy certificates
 
