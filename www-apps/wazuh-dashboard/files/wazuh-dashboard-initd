@@ -16,7 +16,8 @@ pidfile="${PID_DIR}/${RC_SVCNAME}.pid"
 
 command="${WD_HOME}/bin/opensearch-dashboards"
 command_args="-c ${WD_CONFIG_DIR}/opensearch_dashboards.yml"
-#command_args_background="--pidfile=${pidfile}"
+command_user="${WD_USER}:${WD_GROUP}"
+command_args_background="--pidfile=${pidfile}"
 required_files=""
 
 depend() {
